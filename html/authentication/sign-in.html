@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Sign In</title>
+</head>
+<body>
+    <header>
+        <h1>Criar Conta</h1>
+        <a class="tr-btn" href="login.html">Entrar</a>
+    </header>
+
+    <main>
+        <form action="" method="post">
+            <label for="name">Seu nome:</label>
+            <input
+                id="name"
+                name="name" 
+                type="text"
+                required
+                placeholder="nome"
+            >
+
+            <label for="email">Seu email:</label>
+            <input
+                id="email"
+                name="email" 
+                type="email"
+                autocomplete="email"
+                required
+                placeholder="email"
+            >
+
+            <div class="password-box">
+                <label for="password">Sua senha:</label>
+                <input 
+                    id="password"
+                    name="password" 
+                    type="password" 
+                    autocomplete="current-password"
+                    minlength="8"
+                    required
+                    placeholder="senha"
+                >
+
+                <button class="btn-view">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+                <label for="password">*Mínimo 8 caracteres</label>
+            </div>
+        </form>
+
+        <a href="../main-page/main-page.html" class="btn-blue">Criar Conta</a>
+        <button class="btn-grey">
+            Entrar com 
+            <img src="../../images/logos/google-logo.png" alt="">
+        </button>
+    </main>
+</body>
+</html>

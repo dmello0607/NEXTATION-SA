@@ -1,0 +1,19 @@
+header {
+    display: flex;
+    justify-content: space-between;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.btn-grey {
+    gap: 0.313rem;
+}
+
+.icon-logo {
+    height: 1.25rem;
+
+}

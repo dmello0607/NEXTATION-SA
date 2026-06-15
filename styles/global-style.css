@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --main-bg: #1E2126;
+    --cards: #2B3138;
+    --borders: #343B44;
+
+    --blue: #3A7AFE;
+    --darkBlue: #01236B;
+    --red: #E05A5A;
+    --darkRed: #5D1111;
+    --yellow: #E0B341;
+    --darkYellow: #49380C;
+    --green: #4CD964;
+    --darkGreen: #104919;
+
+    --primaryText: #E6E8EB;
+    --seconderyText: #A6ADB5;
+    --terciaryText: #737A84;
+
+    font-family: 'Inter', sans-serif;
+
+    --bodyP: 500 0.875rem;
+    --caption: 400 0.75rem;
+}
+
+.flex {
+    display: flex;
+}
+
+body {
+    background-color: var(--main-bg);
+}
+
+h1 {
+    color: var(--primaryText);
+    font-size: 1.625rem;
+    font-weight: bold;
+}
+
+h2 {
+    color: var(--primaryText);
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+h3 {
+    color: var(--primaryText);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+p {
+    font: var(--bodyP);
+    color: var(--seconderyText);
+}
+
+a {
+    text-decoration: none;
+    color: var(--seconderyText);
+}
+
+label {
+    color: var(--seconderyText);
+}
+
+.btn-blue, .btn-grey {
+    padding: 0.625rem 2.813rem;
+    border-radius: 12px;
+
+    font: inherit;
+
+    appearance: none;
+    border: none;
+    cursor: pointer;
+}
+
+.btn-blue {
+    background-color: var(--blue);
+}
+
+.btn-grey {
+    background: none;
+    border-bottom: 4px solid var(--borders);
+}
+
+.login-section {
+    display: flex;
+    flex-direction: column;
+}

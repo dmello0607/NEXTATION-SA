@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="../../styles/global-style.css">
+    <link rel="stylesheet" href="../../styles/login.css">
+    <title>Login</title>
+</head>
+<body>
+    <header>
+        <h1>Entrar</h1>
+        <a href="sign-in.html">Criar conta</a>
+    </header>
+
+    <main>
+        <form class="login-section" action="" method="post">
+            <label for="email">Seu email:</label>
+            <input
+                id="email"
+                name="email" 
+                type="email"
+                autocomplete="email"
+                required
+                placeholder="email"
+            >
+
+            <div class="password-box">
+                <label for="password">Sua senha:</label>
+                <input 
+                    id="password"
+                    name="password" 
+                    type="password" 
+                    autocomplete="current-password"
+                    required
+                    placeholder="senha"
+                >
+
+                <button class="btn-view">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+                <a class="btn-grey" href="recover-password/email-verify.html">Esqueci minha senha</a>
+            </div>
+
+            <button class="btn-grey flex">
+                <h3>Entrar com </h3>
+                <img class="icon-logo" src="../../images/logos/google-logo.png" alt="">
+            </button>
+        </form>
+    </main>
+</body>
+</html>
