@@ -36,6 +36,8 @@
 
 body {
     background-color: var(--main-bg);
+    padding: 50px;
+    min-height: 100vh;
 }
 
 h1 {
@@ -84,7 +86,6 @@ label {
 .btn-blue {
     background-color: var(--blue);
 }
-
 .btn-grey {
     background: none;
     border-bottom: 4px solid var(--borders);

@@ -7,6 +7,8 @@ main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    min-height: 100vh;
 }
 
 .btn-grey {
@@ -16,4 +18,14 @@ main {
 .icon-logo {
     height: 1.25rem;
 
+}
+
+.login-section {
+    gap: 1.5rem
+}
+
+.password-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
 }
