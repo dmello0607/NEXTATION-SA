@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="../../styles/global-style.css">
+    <link rel="stylesheet" href="../../styles/dashboard.html">
+    <title>Document</title>
+</head>
+<body>
+    <header>
+        <div class="tophead">
+            <i class="fa-solid fa-bars"></i>
+            <i class="fa-solid fa-bell"></i>
+        </div>
+
+        <h1>Olá, Usuário</h1>
+
+        <div class="status-sec">
+            <p>Visão geral da operação</p>
+
+            <div class="status-box">
+                <p>Sistema operacional: </p>
+                <p class="green-text">estável</p>
+                <div class="g-circle"></div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <p>Visão geral da frota</p>
+        <div>
+            <div class="highlight-box">
+                <i class="fa-solid fa-train"></i>
+                <div>
+                    <h1>13</h1>
+                    <p>Trens Ativos</p>
+                    <p class="blue">65% da Frota</p>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+                <div>
+                    <h1>5</h1>
+                    <p>Manutenção</p>
+                    <p class="yellow">25% da Frota</p>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <i class="fa-regular fa-circle-pause"></i>
+                <div>
+                    <h1>2</h1>
+                    <p>Parados</p>
+                    <p class="red">10% da Frota</p>
+                </div>
+            </div>
+            <div class="highlight-box">
+                <i class="fa-regular fa-triangle-exclamation"></i>
+                <div>
+                    <h1>5</h1>
+                    <p>Em risco</p>
+                    <p class="red">25% da Frota</p>
+                </div>
+            </div>
+        </div>
+
+        <p>Distribuição da frota</p>
+        <div class="box-graph">
+            <div class="graph">
+                <div class="b-bar"></div>
+                <div class="y-bar"></div>
+                <div class="r-bar"></div>
+            </div>
+            <div class="flex">
+                <div class="b-circle"></div>
+                <p class="blue">78% Ativo</p>
+            </div>
+
+            <div class="flex">
+                <div class="y-circle"></div>
+                <p class="blue">25% Manutenção</p>
+            </div>
+
+            <div class="flex">
+                <div class="r-circle"></div>
+                <p class="blue">10% Parado</p>
+            </div>
+        </div>
+
+        <div class="alert-head">
+            <p>Alertas prioritários</p>
+            <a href="alerts.html">
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+        <div class="box">
+           <div class="alert">
+                <i class="fa-regular fa-triangle-exclamation"></i>
+                <p>Linha Norte - Sensor crítico</p>
+                <p>Agora</p>
+           </div>
+
+           <div class="alert">
+                <i class="fa-regular fa-triangle-exclamation"></i>
+                <p>Trem TR-07 - Velocidade irregular</p>
+                <p>5 min</p>
+           </div>
+
+           <div class="alert">
+                <i class="fa-regular fa-triangle-exclamation"></i>
+                <p>2 Trens aguardando Manutenção</p>
+                <p>1 h</p>
+           </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-btn selected">
+            <a href="dashboard.html">
+                <i class="fa-regular fa-house"></i>
+            </a>
+            <p>Início</p>
+        </div>
+
+         <div class="footer-btn">
+            <a href="trains.html">
+                <i class="fa-solid fa-train"></i>
+            </a>
+            <p>Frota</p>
+        </div>
+
+         <div class="footer-btn">
+            <a href="reports.html">
+                <i class="fa-solid fa-chart-simple"></i>
+            </a>
+            <p>Relatórios</p>
+        </div>
+
+         <div class="footer-btn">
+            <button id="more-btn">
+                <i class="fa-solid fa-ellipsis"></i>
+            </button>
+            <p>Mais</p>
+        </div>
+    </footer>
+</body>
+</html>
