@@ -1,0 +1,22 @@
+# Dependências e arquivos sensíveis
+.env
+.env.*
+!.env.example
+
+# Configurações locais com senhas, tokens ou credenciais
+backend/config.php
+
+# Dependências
+node_modules/
+
+# Logs
+*.log
+
+# Arquivos do sistema/IDE
+.DS_Store
+Thumbs.db
+.vscode/
+
+# Build/cache
+dist/
+build/

@@ -1,0 +1,46 @@
+header {
+    display: flex;
+    justify-content: space-between;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.btn-grey {
+    color: var(--seconderyText);
+    gap: 0.313rem;
+}
+
+.icon-logo {
+    height: 1.25rem;
+
+}
+
+.login-section {
+    gap: 1.5rem
+}
+
+.password-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.hint {
+    color: var(--terciaryText);
+}
+
+button img {
+    height: 1.25rem;
+}

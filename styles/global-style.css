@@ -84,6 +84,7 @@ label {
 }
 
 .btn-blue {
+    color: var(--primaryText);
     background-color: var(--blue);
 }
 .btn-grey {
