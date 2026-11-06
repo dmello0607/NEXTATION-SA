@@ -1,0 +1,7 @@
+/* CSS minimo: so as cores semanticas (o visual completo vem depois) */
+.erro { color: #b00020; }
+.sucesso { color: #1b7a2e; }
+.status-normal, .sev-normal { color: #1b7a2e; font-weight: bold; }
+.status-atencao, .sev-atencao { color: #b58900; font-weight: bold; }
+.status-critico, .sev-critico { color: #b00020; font-weight: bold; }
+.linha-critica { background: #fde8e8; }
