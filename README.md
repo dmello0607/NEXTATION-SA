@@ -181,5 +181,3 @@ As alterações desta etapa utilizaram **Codex (OpenAI)**:
 | Entrada do site | Remoção do redirecionamento automático para o painel ao abrir o login | Verificação de sintaxe PHP e revisão da alteração |
 | Ambiente local | Importação do banco ausente a partir do script existente | Conferência das tabelas e conexão PHP |
 | README | Atualização das instruções e do estado atual do projeto | Revisão dos caminhos, funcionalidades e alterações realizadas |
-
-A equipe deve completar os nomes, a turma e a indicação de quem domina cada parte, além de conferir o formato de declaração exigido pela unidade curricular.
