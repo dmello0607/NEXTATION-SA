@@ -76,62 +76,78 @@ $resultado = $stmt->get_result();
 $lista_trens = $conexao->query('SELECT id_trem, prefixo FROM trens ORDER BY prefixo');
 
 $titulo = 'Sensores';
+$voltar = 'dashboard.php';
 require __DIR__ . '/includes/cabecalho.php';
 mostrarFlash();
 ?>
-<h1>Sensores</h1>
-<?php if ($eh_admin): ?><p><a href="sensores_form.php">Cadastrar novo sensor</a></p><?php endif; ?>
+<section class="pagina-cabecalho">
+    <h1 class="titulo-pagina">Sensores</h1>
+</section>
 
-<form method="GET" action="sensores.php">
-    <input type="text" name="busca" placeholder="Código, localização ou segmento" value="<?= e($busca) ?>">
-    <select name="tipo">
-        <option value="">Todos os tipos</option>
-        <?php foreach (tiposSensor() as $valor => $rotulo): ?>
-            <option value="<?= e($valor) ?>" <?= $tipo === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
-        <?php endforeach; ?>
-    </select>
-    <select name="id_trem">
-        <option value="0">Todos os trens</option>
-        <?php while ($t = $lista_trens->fetch_assoc()): ?>
-            <option value="<?= (int)$t['id_trem'] ?>" <?= $id_trem === (int)$t['id_trem'] ? 'selected' : '' ?>><?= e($t['prefixo']) ?></option>
-        <?php endwhile; ?>
-    </select>
-    <button type="submit">Filtrar</button>
-    <a href="sensores.php">Limpar</a>
+<form class="filtros" method="GET" action="sensores.php" role="search">
+    <div class="campo campo-busca">
+        <label class="visualmente-oculto" for="busca">Buscar</label>
+        <input class="campo-entrada" type="search" id="busca" name="busca" placeholder="Buscar por código, localização ou segmento..." value="<?= e($busca) ?>">
+    </div>
+    <div class="campo">
+        <label class="visualmente-oculto" for="tipo">Tipo</label>
+        <select class="campo-entrada" id="tipo" name="tipo">
+            <option value="">Todos os tipos</option>
+            <?php foreach (tiposSensor() as $valor => $rotulo): ?>
+                <option value="<?= e($valor) ?>" <?= $tipo === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <div class="campo">
+        <label class="visualmente-oculto" for="id_trem">Trem</label>
+        <select class="campo-entrada" id="id_trem" name="id_trem">
+            <option value="0">Todos os trens</option>
+            <?php while ($t = $lista_trens->fetch_assoc()): ?>
+                <option value="<?= (int)$t['id_trem'] ?>" <?= $id_trem === (int)$t['id_trem'] ? 'selected' : '' ?>><?= e($t['prefixo']) ?></option>
+            <?php endwhile; ?>
+        </select>
+    </div>
+    <div class="filtros-acoes">
+        <button class="botao botao-secundario" type="submit">Filtrar</button>
+        <a class="botao-link" href="sensores.php">Limpar</a>
+    </div>
 </form>
 
 <?php if ($resultado->num_rows === 0): ?>
-    <p>Nenhum sensor encontrado.</p>
+    <p class="estado-vazio">Nenhum sensor encontrado.</p>
 <?php else: ?>
-<table>
+<table class="tabela tabela-cartoes tabela-sensores">
     <thead>
-        <tr><th>Código</th><th>Trem</th><th>Tipo</th><th>Localização</th><th>Segmento</th><th>Última leitura</th><?php if ($eh_admin): ?><th>Ações</th><?php endif; ?></tr>
+        <tr>
+            <th scope="col">Código</th><th scope="col">Trem</th><th scope="col">Tipo</th><th scope="col">Localização</th>
+            <th scope="col">Segmento</th><th scope="col">Última leitura</th><?php if ($eh_admin): ?><th scope="col">Ações</th><?php endif; ?>
+        </tr>
     </thead>
     <tbody>
     <?php while ($s = $resultado->fetch_assoc()): ?>
         <?php
         if ($s['ult_valor'] === null) {
             $indicador = 'Sem leitura';
-            $classe = '';
+            $classe = 'sem-leitura';
         } else {
             $sev = classificarValor((float)$s['ult_valor'], $s['limite_max'] === null ? null : (float)$s['limite_max']);
-            $indicador = number_format((float)$s['ult_valor'], 2, ',', '.') . ' ' . $s['ult_unidade'] . ' (' . $sev . ')';
+            $indicador = number_format((float)$s['ult_valor'], 2, ',', '.') . ' ' . $s['ult_unidade'] . ' (' . rotulosSeveridade()[$sev] . ')';
             $classe = 'sev-' . $sev;
         }
         ?>
-        <tr>
-            <td><?= e($s['codigo']) ?></td>
-            <td><?= e($s['prefixo']) ?> - <?= e($s['modelo']) ?></td>
-            <td><?= e(tiposSensor()[$s['tipo']] ?? $s['tipo']) ?></td>
-            <td><?= e($s['localizacao']) ?></td>
-            <td><?= e($s['segmento']) ?></td>
-            <td class="<?= e($classe) ?>"><?= e($indicador) ?></td>
+        <tr class="linha">
+            <td class="celula-principal" data-label="Código"><?= e($s['codigo']) ?></td>
+            <td data-label="Trem"><?= e($s['prefixo']) ?> - <?= e($s['modelo']) ?></td>
+            <td data-label="Tipo"><?= e(tiposSensor()[$s['tipo']] ?? $s['tipo']) ?></td>
+            <td data-label="Localização"><?= e($s['localizacao']) ?></td>
+            <td data-label="Segmento"><?= e($s['segmento']) ?></td>
+            <td class="<?= e($classe) ?>" data-label="Última leitura"><?= e($indicador) ?></td>
             <?php if ($eh_admin): ?>
-            <td>
-                <a href="sensores_form.php?id_sensor=<?= (int)$s['id_sensor'] ?>">Editar</a>
-                <form method="POST" action="sensores.php" style="display:inline" onsubmit="return confirm('Confirma a exclusão? As leituras e alertas deste sensor também serão removidos.');">
+            <td class="celula-acoes" data-label="Ações">
+                <a class="botao botao-editar" href="sensores_form.php?id_sensor=<?= (int)$s['id_sensor'] ?>">Editar</a>
+                <form class="form-linha" method="POST" action="sensores.php" onsubmit="return confirm('Confirma a exclusão? As leituras e alertas deste sensor também serão removidos.');">
                     <input type="hidden" name="excluir_id" value="<?= (int)$s['id_sensor'] ?>">
-                    <button type="submit">Excluir</button>
+                    <button class="botao botao-perigo" type="submit">Excluir</button>
                 </form>
             </td>
             <?php endif; ?>
@@ -140,4 +156,10 @@ mostrarFlash();
     </tbody>
 </table>
 <?php endif; $stmt->close(); ?>
+
+<?php if ($eh_admin): ?>
+<div class="acoes-pagina">
+    <a class="botao botao-primario botao-largo" href="sensores_form.php">Adicionar</a>
+</div>
+<?php endif; ?>
 <?php require __DIR__ . '/includes/rodape.php'; ?>

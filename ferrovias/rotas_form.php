@@ -120,48 +120,78 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $lista_trens = $conexao->query('SELECT id_trem, prefixo, modelo FROM trens ORDER BY prefixo');
 
-$titulo = $id_rota > 0 ? 'Editar rota' : 'Cadastrar rota';
+$editando = $id_rota > 0;
+$titulo = $editando ? 'Editar rota' : 'Cadastrar rota';
+$voltar = $destino_volta;
 require __DIR__ . '/includes/cabecalho.php';
 ?>
-<h1><?= e($titulo) ?></h1>
-<?php foreach ($erros as $erro): ?><p class="erro"><?= e($erro) ?></p><?php endforeach; ?>
-<form method="POST" action="rotas_form.php">
+<section class="pagina-cabecalho">
+    <h1 class="titulo-pagina"><?= e($titulo) ?></h1>
+</section>
+
+<?php mostrarErros($erros); ?>
+
+<form class="formulario formulario-rota" method="POST" action="rotas_form.php">
     <input type="hidden" name="id_rota" value="<?= (int)$id_rota ?>">
     <input type="hidden" name="volta" value="<?= e($volta) ?>">
 
-    <label for="id_trem">Trem</label>
-    <select id="id_trem" name="id_trem" required>
-        <option value="">Selecione o trem</option>
-        <?php while ($t = $lista_trens->fetch_assoc()): ?>
-            <option value="<?= (int)$t['id_trem'] ?>" <?= (int)$dados['id_trem'] === (int)$t['id_trem'] ? 'selected' : '' ?>>
-                <?= e($t['prefixo']) ?> — <?= e($t['modelo']) ?>
-            </option>
-        <?php endwhile; ?>
-    </select>
+    <fieldset class="grupo grupo-trajeto">
+        <legend class="grupo-titulo">Trajeto</legend>
+        <div class="campo">
+            <label class="campo-rotulo" for="id_trem">Trem</label>
+            <select class="campo-entrada" id="id_trem" name="id_trem" required>
+                <option value="">Selecione o trem</option>
+                <?php while ($t = $lista_trens->fetch_assoc()): ?>
+                    <option value="<?= (int)$t['id_trem'] ?>" <?= (int)$dados['id_trem'] === (int)$t['id_trem'] ? 'selected' : '' ?>>
+                        <?= e($t['prefixo']) ?> — <?= e($t['modelo']) ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+        </div>
+        <div class="campo">
+            <label class="campo-rotulo" for="origem">Origem</label>
+            <input class="campo-entrada" type="text" id="origem" name="origem" maxlength="80" value="<?= e($dados['origem']) ?>" required>
+        </div>
+        <div class="campo">
+            <label class="campo-rotulo" for="destino">Destino</label>
+            <input class="campo-entrada" type="text" id="destino" name="destino" maxlength="80" value="<?= e($dados['destino']) ?>" required>
+        </div>
+    </fieldset>
 
-    <label for="origem">Origem</label>
-    <input type="text" id="origem" name="origem" maxlength="80" value="<?= e($dados['origem']) ?>" required>
+    <fieldset class="grupo grupo-horario">
+        <legend class="grupo-titulo">Horário</legend>
+        <div class="campo">
+            <label class="campo-rotulo" for="data_viagem">Data da viagem</label>
+            <input class="campo-entrada" type="date" id="data_viagem" name="data_viagem" value="<?= e($dados['data_viagem']) ?>" required>
+        </div>
+        <div class="campo">
+            <label class="campo-rotulo" for="hora_partida">Hora de partida</label>
+            <input class="campo-entrada" type="time" id="hora_partida" name="hora_partida" value="<?= e($dados['hora_partida']) ?>" required>
+        </div>
+        <div class="campo">
+            <label class="campo-rotulo" for="hora_chegada">Hora de chegada</label>
+            <input class="campo-entrada" type="time" id="hora_chegada" name="hora_chegada" value="<?= e($dados['hora_chegada']) ?>">
+            <small class="campo-ajuda">Opcional. Sem chegada, o trem fica ocupado pelo resto do dia.</small>
+        </div>
+    </fieldset>
 
-    <label for="destino">Destino</label>
-    <input type="text" id="destino" name="destino" maxlength="80" value="<?= e($dados['destino']) ?>" required>
+    <fieldset class="grupo grupo-situacao">
+        <legend class="grupo-titulo">Situação</legend>
+        <div class="campo campo-opcoes">
+            <span class="campo-rotulo" id="rotulo-status">Status</span>
+            <div class="opcoes" role="radiogroup" aria-labelledby="rotulo-status">
+                <?php foreach (statusRotas() as $valor => $rotulo): ?>
+                    <label class="opcao">
+                        <input type="radio" name="status" value="<?= e($valor) ?>" <?= $dados['status'] === $valor ? 'checked' : '' ?> required>
+                        <span class="opcao-texto"><?= e($rotulo) ?></span>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </fieldset>
 
-    <label for="data_viagem">Data da viagem</label>
-    <input type="date" id="data_viagem" name="data_viagem" value="<?= e($dados['data_viagem']) ?>" required>
-
-    <label for="hora_partida">Hora de partida</label>
-    <input type="time" id="hora_partida" name="hora_partida" value="<?= e($dados['hora_partida']) ?>" required>
-
-    <label for="hora_chegada">Hora de chegada (opcional)</label>
-    <input type="time" id="hora_chegada" name="hora_chegada" value="<?= e($dados['hora_chegada']) ?>">
-
-    <label for="status">Status</label>
-    <select id="status" name="status" required>
-        <?php foreach (statusRotas() as $valor => $rotulo): ?>
-            <option value="<?= e($valor) ?>" <?= $dados['status'] === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
-        <?php endforeach; ?>
-    </select>
-
-    <button type="submit">Salvar</button>
-    <a href="<?= e($destino_volta) ?>">Cancelar</a>
+    <div class="formulario-acoes">
+        <button class="botao botao-primario botao-largo" type="submit"><?= $editando ? 'Salvar' : 'Adicionar' ?></button>
+    </div>
 </form>
 <?php require __DIR__ . '/includes/rodape.php'; ?>

@@ -64,46 +64,57 @@ $lista_trens = $conexao->query('SELECT id_trem, prefixo FROM trens ORDER BY pref
 $filtros = array_filter(['id_sensor' => $id_sensor, 'id_trem' => $id_trem]);
 
 $titulo = 'Leituras dos sensores';
+$voltar = 'dashboard.php';
 require __DIR__ . '/includes/cabecalho.php';
 mostrarFlash();
 ?>
-<h1>Leituras dos sensores</h1>
+<section class="pagina-cabecalho">
+    <h1 class="titulo-pagina">Leituras dos sensores</h1>
+</section>
 
-<form method="GET" action="leituras.php">
-    <select name="id_sensor">
-        <option value="0">Todos os sensores</option>
-        <?php while ($s = $lista_sensores->fetch_assoc()): ?>
-            <option value="<?= (int)$s['id_sensor'] ?>" <?= $id_sensor === (int)$s['id_sensor'] ? 'selected' : '' ?>><?= e($s['codigo']) ?> (<?= e($s['prefixo']) ?>)</option>
-        <?php endwhile; ?>
-    </select>
-    <select name="id_trem">
-        <option value="0">Todos os trens</option>
-        <?php while ($t = $lista_trens->fetch_assoc()): ?>
-            <option value="<?= (int)$t['id_trem'] ?>" <?= $id_trem === (int)$t['id_trem'] ? 'selected' : '' ?>><?= e($t['prefixo']) ?></option>
-        <?php endwhile; ?>
-    </select>
-    <button type="submit">Filtrar</button>
-    <a href="leituras.php">Limpar</a>
+<form class="filtros" method="GET" action="leituras.php" role="search">
+    <div class="campo">
+        <label class="visualmente-oculto" for="id_sensor">Sensor</label>
+        <select class="campo-entrada" id="id_sensor" name="id_sensor">
+            <option value="0">Todos os sensores</option>
+            <?php while ($s = $lista_sensores->fetch_assoc()): ?>
+                <option value="<?= (int)$s['id_sensor'] ?>" <?= $id_sensor === (int)$s['id_sensor'] ? 'selected' : '' ?>><?= e($s['codigo']) ?> (<?= e($s['prefixo']) ?>)</option>
+            <?php endwhile; ?>
+        </select>
+    </div>
+    <div class="campo">
+        <label class="visualmente-oculto" for="id_trem">Trem</label>
+        <select class="campo-entrada" id="id_trem" name="id_trem">
+            <option value="0">Todos os trens</option>
+            <?php while ($t = $lista_trens->fetch_assoc()): ?>
+                <option value="<?= (int)$t['id_trem'] ?>" <?= $id_trem === (int)$t['id_trem'] ? 'selected' : '' ?>><?= e($t['prefixo']) ?></option>
+            <?php endwhile; ?>
+        </select>
+    </div>
+    <div class="filtros-acoes">
+        <button class="botao botao-secundario" type="submit">Filtrar</button>
+        <a class="botao-link" href="leituras.php">Limpar</a>
+    </div>
 </form>
 
 <?php if ($resultado->num_rows === 0): ?>
-    <p><?= count($filtros) > 0 ? 'Nenhuma leitura encontrada para os filtros selecionados.' : 'Nenhuma leitura registrada ainda. Use o simulador para gerar leituras.' ?></p>
+    <p class="estado-vazio"><?= count($filtros) > 0 ? 'Nenhuma leitura encontrada para os filtros selecionados.' : 'Nenhuma leitura registrada ainda. Use o simulador para gerar leituras.' ?></p>
 <?php else: ?>
-<p><?= (int)$total ?> leitura(s) encontrada(s).</p>
-<table>
+<p class="total-resultados"><strong><?= (int)$total ?></strong> leitura(s) encontrada(s).</p>
+<table class="tabela tabela-cartoes tabela-leituras">
     <thead>
-        <tr><th>Data e hora</th><th>Sensor</th><th>Trem</th><th>Tipo</th><th>Valor</th><th>Situação</th></tr>
+        <tr><th scope="col">Data e hora</th><th scope="col">Sensor</th><th scope="col">Trem</th><th scope="col">Tipo</th><th scope="col">Valor</th><th scope="col">Situação</th></tr>
     </thead>
     <tbody>
     <?php while ($l = $resultado->fetch_assoc()): ?>
         <?php $sev = classificarValor((float)$l['valor'], $l['limite_max'] === null ? null : (float)$l['limite_max']); ?>
-        <tr>
-            <td><?= e(date('d/m/Y H:i', strtotime($l['data_hora']))) ?></td>
-            <td><?= e($l['codigo']) ?></td>
-            <td><?= e($l['prefixo']) ?></td>
-            <td><?= e(tiposSensor()[$l['tipo']] ?? $l['tipo']) ?></td>
-            <td><?= e(number_format((float)$l['valor'], 2, ',', '.')) ?> <?= e($l['unidade']) ?></td>
-            <td class="sev-<?= e($sev) ?>"><?= e(rotulosSeveridade()[$sev]) ?></td>
+        <tr class="linha">
+            <td data-label="Data e hora"><?= e(date('d/m/Y H:i', strtotime($l['data_hora']))) ?></td>
+            <td class="celula-principal" data-label="Sensor"><?= e($l['codigo']) ?></td>
+            <td data-label="Trem"><?= e($l['prefixo']) ?></td>
+            <td data-label="Tipo"><?= e(tiposSensor()[$l['tipo']] ?? $l['tipo']) ?></td>
+            <td data-label="Valor"><?= e(number_format((float)$l['valor'], 2, ',', '.')) ?> <?= e($l['unidade']) ?></td>
+            <td class="sev-<?= e($sev) ?>" data-label="Situação"><?= e(rotulosSeveridade()[$sev]) ?></td>
         </tr>
     <?php endwhile; ?>
     </tbody>

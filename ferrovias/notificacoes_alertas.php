@@ -61,46 +61,57 @@ $resultado = $stmt->get_result();
 $filtros = array_filter(['severidade' => $severidade, 'tipo' => $tipo]);
 
 $titulo = 'Central de alertas';
+$voltar = 'dashboard.php';
 require __DIR__ . '/includes/cabecalho.php';
 mostrarFlash();
 ?>
-<h1>Central de alertas</h1>
+<section class="pagina-cabecalho">
+    <h1 class="titulo-pagina">Central de alertas</h1>
+</section>
 
-<form method="GET" action="notificacoes_alertas.php">
-    <select name="severidade">
-        <option value="">Todas as severidades</option>
-        <?php foreach (rotulosSeveridade() as $valor => $rotulo): ?>
-            <option value="<?= e($valor) ?>" <?= $severidade === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
-        <?php endforeach; ?>
-    </select>
-    <select name="tipo">
-        <option value="">Todos os tipos</option>
-        <?php foreach (tiposSensor() as $valor => $rotulo): ?>
-            <option value="<?= e($valor) ?>" <?= $tipo === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
-        <?php endforeach; ?>
-    </select>
-    <button type="submit">Filtrar</button>
-    <a href="notificacoes_alertas.php">Limpar</a>
+<form class="filtros" method="GET" action="notificacoes_alertas.php" role="search">
+    <div class="campo">
+        <label class="visualmente-oculto" for="severidade">Severidade</label>
+        <select class="campo-entrada" id="severidade" name="severidade">
+            <option value="">Todas as severidades</option>
+            <?php foreach (rotulosSeveridade() as $valor => $rotulo): ?>
+                <option value="<?= e($valor) ?>" <?= $severidade === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <div class="campo">
+        <label class="visualmente-oculto" for="tipo">Tipo</label>
+        <select class="campo-entrada" id="tipo" name="tipo">
+            <option value="">Todos os tipos</option>
+            <?php foreach (tiposSensor() as $valor => $rotulo): ?>
+                <option value="<?= e($valor) ?>" <?= $tipo === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <div class="filtros-acoes">
+        <button class="botao botao-secundario" type="submit">Filtrar</button>
+        <a class="botao-link" href="notificacoes_alertas.php">Limpar</a>
+    </div>
 </form>
 
 <?php if ($resultado->num_rows === 0): ?>
-    <p><?= count($filtros) > 0 ? 'Nenhum alerta encontrado para os filtros selecionados.' : 'Nenhum alerta registrado. Tudo dentro do esperado.' ?></p>
+    <p class="estado-vazio"><?= count($filtros) > 0 ? 'Nenhum alerta encontrado para os filtros selecionados.' : 'Nenhum alerta registrado. Tudo dentro do esperado.' ?></p>
 <?php else: ?>
-<p><?= (int)$total ?> alerta(s) encontrado(s).</p>
-<table>
+<p class="total-resultados"><strong><?= (int)$total ?></strong> alerta(s) encontrado(s).</p>
+<table class="tabela tabela-cartoes tabela-alertas">
     <thead>
-        <tr><th>Data e hora</th><th>Severidade</th><th>Tipo</th><th>Trem</th><th>Sensor</th><th>Valor</th><th>Mensagem</th></tr>
+        <tr><th scope="col">Data e hora</th><th scope="col">Severidade</th><th scope="col">Tipo</th><th scope="col">Trem</th><th scope="col">Sensor</th><th scope="col">Valor</th><th scope="col">Mensagem</th></tr>
     </thead>
     <tbody>
     <?php while ($a = $resultado->fetch_assoc()): ?>
-        <tr class="<?= $a['severidade'] === 'critico' ? 'linha-critica' : '' ?>">
-            <td><?= e(date('d/m/Y H:i', strtotime($a['data_hora']))) ?></td>
-            <td class="sev-<?= e($a['severidade']) ?>"><?= e(rotulosSeveridade()[$a['severidade']] ?? $a['severidade']) ?></td>
-            <td><?= e(tiposSensor()[$a['tipo_sensor']] ?? $a['tipo_sensor']) ?></td>
-            <td><?= e($a['prefixo']) ?></td>
-            <td><?= e($a['codigo']) ?></td>
-            <td><?= e(number_format((float)$a['valor'], 2, ',', '.')) ?> <?= e($a['unidade']) ?></td>
-            <td><?= e($a['mensagem']) ?></td>
+        <tr class="linha<?= $a['severidade'] === 'critico' ? ' linha-critica' : '' ?>">
+            <td data-label="Data e hora"><?= e(date('d/m/Y H:i', strtotime($a['data_hora']))) ?></td>
+            <td data-label="Severidade"><span class="selo sev-<?= e($a['severidade']) ?>"><?= e(rotulosSeveridade()[$a['severidade']] ?? $a['severidade']) ?></span></td>
+            <td data-label="Tipo"><?= e(tiposSensor()[$a['tipo_sensor']] ?? $a['tipo_sensor']) ?></td>
+            <td class="celula-principal" data-label="Trem"><?= e($a['prefixo']) ?></td>
+            <td data-label="Sensor"><?= e($a['codigo']) ?></td>
+            <td data-label="Valor"><?= e(number_format((float)$a['valor'], 2, ',', '.')) ?> <?= e($a['unidade']) ?></td>
+            <td data-label="Mensagem"><?= e($a['mensagem']) ?></td>
         </tr>
     <?php endwhile; ?>
     </tbody>

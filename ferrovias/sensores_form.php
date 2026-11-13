@@ -81,42 +81,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $lista_trens = $conexao->query('SELECT id_trem, prefixo, modelo FROM trens ORDER BY prefixo');
 
-$titulo = $id_sensor > 0 ? 'Editar sensor' : 'Cadastrar sensor';
+$editando = $id_sensor > 0;
+$titulo = $editando ? 'Editar sensor' : 'Cadastrar sensor';
+$voltar = 'sensores.php';
 require __DIR__ . '/includes/cabecalho.php';
 ?>
-<h1><?= e($titulo) ?></h1>
-<?php foreach ($erros as $erro): ?><p class="erro"><?= e($erro) ?></p><?php endforeach; ?>
-<form method="POST" action="sensores_form.php">
+<section class="pagina-cabecalho">
+    <h1 class="titulo-pagina"><?= e($titulo) ?></h1>
+</section>
+
+<?php mostrarErros($erros); ?>
+
+<form class="formulario formulario-sensor" method="POST" action="sensores_form.php">
     <input type="hidden" name="id_sensor" value="<?= (int)$id_sensor ?>">
 
-    <label for="id_trem">Trem</label>
-    <select id="id_trem" name="id_trem" required>
-        <option value="">Selecione o trem</option>
-        <?php while ($t = $lista_trens->fetch_assoc()): ?>
-            <option value="<?= (int)$t['id_trem'] ?>" <?= (int)$dados['id_trem'] === (int)$t['id_trem'] ? 'selected' : '' ?>>
-                <?= e($t['prefixo']) ?> — <?= e($t['modelo']) ?>
-            </option>
-        <?php endwhile; ?>
-    </select>
+    <fieldset class="grupo grupo-vinculo">
+        <legend class="grupo-titulo">Vínculo</legend>
+        <div class="campo">
+            <label class="campo-rotulo" for="id_trem">Trem</label>
+            <select class="campo-entrada" id="id_trem" name="id_trem" required>
+                <option value="">Selecione o trem</option>
+                <?php while ($t = $lista_trens->fetch_assoc()): ?>
+                    <option value="<?= (int)$t['id_trem'] ?>" <?= (int)$dados['id_trem'] === (int)$t['id_trem'] ? 'selected' : '' ?>>
+                        <?= e($t['prefixo']) ?> — <?= e($t['modelo']) ?>
+                    </option>
+                <?php endwhile; ?>
+            </select>
+        </div>
+    </fieldset>
 
-    <label for="codigo">Código</label>
-    <input type="text" id="codigo" name="codigo" maxlength="20" placeholder="S-TEMP-001" value="<?= e($dados['codigo']) ?>" required>
+    <fieldset class="grupo grupo-identificacao">
+        <legend class="grupo-titulo">Identificação</legend>
+        <div class="campo">
+            <label class="campo-rotulo" for="codigo">Código</label>
+            <input class="campo-entrada" type="text" id="codigo" name="codigo" maxlength="20" placeholder="S-TEMP-001" value="<?= e($dados['codigo']) ?>" required>
+        </div>
+        <div class="campo">
+            <label class="campo-rotulo" for="tipo">Tipo</label>
+            <select class="campo-entrada" id="tipo" name="tipo" required>
+                <option value="">Selecione o tipo</option>
+                <?php foreach (tiposSensor() as $valor => $rotulo): ?>
+                    <option value="<?= e($valor) ?>" <?= $dados['tipo'] === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+    </fieldset>
 
-    <label for="tipo">Tipo</label>
-    <select id="tipo" name="tipo" required>
-        <option value="">Selecione o tipo</option>
-        <?php foreach (tiposSensor() as $valor => $rotulo): ?>
-            <option value="<?= e($valor) ?>" <?= $dados['tipo'] === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
-        <?php endforeach; ?>
-    </select>
+    <fieldset class="grupo grupo-instalacao">
+        <legend class="grupo-titulo">Instalação</legend>
+        <div class="campo">
+            <label class="campo-rotulo" for="localizacao">Localização no trem</label>
+            <input class="campo-entrada" type="text" id="localizacao" name="localizacao" maxlength="80" placeholder="Motor, eixo dianteiro, cabine" value="<?= e($dados['localizacao']) ?>">
+        </div>
+        <div class="campo">
+            <label class="campo-rotulo" for="segmento">Segmento da malha</label>
+            <input class="campo-entrada" type="text" id="segmento" name="segmento" maxlength="80" value="<?= e($dados['segmento']) ?>">
+        </div>
+    </fieldset>
 
-    <label for="localizacao">Localização no trem</label>
-    <input type="text" id="localizacao" name="localizacao" maxlength="80" placeholder="Motor, eixo dianteiro, cabine" value="<?= e($dados['localizacao']) ?>">
-
-    <label for="segmento">Segmento da malha</label>
-    <input type="text" id="segmento" name="segmento" maxlength="80" value="<?= e($dados['segmento']) ?>">
-
-    <button type="submit">Salvar</button>
-    <a href="sensores.php">Cancelar</a>
+    <div class="formulario-acoes">
+        <button class="botao botao-primario botao-largo" type="submit"><?= $editando ? 'Salvar' : 'Adicionar' ?></button>
+    </div>
 </form>
 <?php require __DIR__ . '/includes/rodape.php'; ?>

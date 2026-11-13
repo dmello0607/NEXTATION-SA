@@ -83,58 +83,78 @@ $lista_trens = $conexao->query('SELECT id_trem, prefixo FROM trens ORDER BY pref
 $qs = filtrosRotasQuery($_GET);
 
 $titulo = 'Rotas e viagens programadas';
+$voltar = 'dashboard.php';
 require __DIR__ . '/includes/cabecalho.php';
 mostrarFlash();
 ?>
-<h1>Rotas e viagens programadas</h1>
-<?php if ($eh_admin): ?><p><a href="rotas_form.php<?= $qs !== '' ? '?volta=' . urlencode($qs) : '' ?>">Cadastrar nova rota</a></p><?php endif; ?>
+<section class="pagina-cabecalho">
+    <h1 class="titulo-pagina">Rotas e viagens programadas</h1>
+</section>
 
-<form method="GET" action="rotas.php">
-    <select name="status">
-        <option value="">Todos os status</option>
-        <?php foreach (statusRotas() as $valor => $rotulo): ?>
-            <option value="<?= e($valor) ?>" <?= $status === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
-        <?php endforeach; ?>
-    </select>
-    <select name="id_trem">
-        <option value="0">Todos os trens</option>
-        <?php while ($t = $lista_trens->fetch_assoc()): ?>
-            <option value="<?= (int)$t['id_trem'] ?>" <?= $id_trem === (int)$t['id_trem'] ? 'selected' : '' ?>><?= e($t['prefixo']) ?></option>
-        <?php endwhile; ?>
-    </select>
-    <label for="data_inicio">De</label>
-    <input type="date" id="data_inicio" name="data_inicio" value="<?= e($data_inicio) ?>">
-    <label for="data_fim">Até</label>
-    <input type="date" id="data_fim" name="data_fim" value="<?= e($data_fim) ?>">
-    <input type="text" name="busca" placeholder="Origem ou destino" value="<?= e($busca) ?>">
-    <button type="submit">Filtrar</button>
-    <a href="rotas.php">Limpar</a>
+<form class="filtros" method="GET" action="rotas.php" role="search">
+    <div class="campo campo-busca">
+        <label class="visualmente-oculto" for="busca">Buscar</label>
+        <input class="campo-entrada" type="search" id="busca" name="busca" placeholder="Buscar por origem ou destino..." value="<?= e($busca) ?>">
+    </div>
+    <div class="campo">
+        <label class="visualmente-oculto" for="status">Status</label>
+        <select class="campo-entrada" id="status" name="status">
+            <option value="">Todos os status</option>
+            <?php foreach (statusRotas() as $valor => $rotulo): ?>
+                <option value="<?= e($valor) ?>" <?= $status === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <div class="campo">
+        <label class="visualmente-oculto" for="id_trem">Trem</label>
+        <select class="campo-entrada" id="id_trem" name="id_trem">
+            <option value="0">Todos os trens</option>
+            <?php while ($t = $lista_trens->fetch_assoc()): ?>
+                <option value="<?= (int)$t['id_trem'] ?>" <?= $id_trem === (int)$t['id_trem'] ? 'selected' : '' ?>><?= e($t['prefixo']) ?></option>
+            <?php endwhile; ?>
+        </select>
+    </div>
+    <div class="campo">
+        <label class="campo-rotulo" for="data_inicio">De</label>
+        <input class="campo-entrada" type="date" id="data_inicio" name="data_inicio" value="<?= e($data_inicio) ?>">
+    </div>
+    <div class="campo">
+        <label class="campo-rotulo" for="data_fim">Até</label>
+        <input class="campo-entrada" type="date" id="data_fim" name="data_fim" value="<?= e($data_fim) ?>">
+    </div>
+    <div class="filtros-acoes">
+        <button class="botao botao-secundario" type="submit">Filtrar</button>
+        <a class="botao-link" href="rotas.php">Limpar</a>
+    </div>
 </form>
 
 <?php if ($resultado->num_rows === 0): ?>
-    <p>Nenhuma rota encontrada<?= $qs !== '' ? ' para os filtros selecionados' : '' ?>.</p>
+    <p class="estado-vazio">Nenhuma rota encontrada<?= $qs !== '' ? ' para os filtros selecionados' : '' ?>.</p>
 <?php else: ?>
-<table>
+<table class="tabela tabela-cartoes tabela-rotas">
     <thead>
-        <tr><th>Trem</th><th>Origem</th><th>Destino</th><th>Data</th><th>Partida</th><th>Chegada</th><th>Status</th><?php if ($eh_admin): ?><th>Ações</th><?php endif; ?></tr>
+        <tr>
+            <th scope="col">Trem</th><th scope="col">Origem</th><th scope="col">Destino</th><th scope="col">Data</th>
+            <th scope="col">Partida</th><th scope="col">Chegada</th><th scope="col">Status</th><?php if ($eh_admin): ?><th scope="col">Ações</th><?php endif; ?>
+        </tr>
     </thead>
     <tbody>
     <?php while ($r = $resultado->fetch_assoc()): ?>
-        <tr>
-            <td><?= e($r['prefixo']) ?> - <?= e($r['modelo']) ?></td>
-            <td><?= e($r['origem']) ?></td>
-            <td><?= e($r['destino']) ?></td>
-            <td><?= e(date('d/m/Y', strtotime($r['data_viagem']))) ?></td>
-            <td><?= e(substr($r['hora_partida'], 0, 5)) ?></td>
-            <td><?= $r['hora_chegada'] ? e(substr($r['hora_chegada'], 0, 5)) : 'A definir' ?></td>
-            <td><?= e(statusRotas()[$r['status']] ?? $r['status']) ?></td>
+        <tr class="linha">
+            <td class="celula-principal" data-label="Trem"><?= e($r['prefixo']) ?> - <?= e($r['modelo']) ?></td>
+            <td data-label="Origem"><?= e($r['origem']) ?></td>
+            <td data-label="Destino"><?= e($r['destino']) ?></td>
+            <td data-label="Data"><?= e(date('d/m/Y', strtotime($r['data_viagem']))) ?></td>
+            <td data-label="Partida"><?= e(substr($r['hora_partida'], 0, 5)) ?></td>
+            <td data-label="Chegada"><?= $r['hora_chegada'] ? e(substr($r['hora_chegada'], 0, 5)) : 'A definir' ?></td>
+            <td data-label="Status"><span class="selo selo-rota-<?= e($r['status']) ?>"><?= e(statusRotas()[$r['status']] ?? $r['status']) ?></span></td>
             <?php if ($eh_admin): ?>
-            <td>
-                <a href="rotas_form.php?id_rota=<?= (int)$r['id_rota'] ?><?= $qs !== '' ? '&volta=' . urlencode($qs) : '' ?>">Editar</a>
-                <form method="POST" action="rotas.php" style="display:inline" onsubmit="return confirm('Confirma a exclusão?');">
+            <td class="celula-acoes" data-label="Ações">
+                <a class="botao botao-editar" href="rotas_form.php?id_rota=<?= (int)$r['id_rota'] ?><?= $qs !== '' ? '&amp;volta=' . urlencode($qs) : '' ?>">Editar</a>
+                <form class="form-linha" method="POST" action="rotas.php" onsubmit="return confirm('Confirma a exclusão?');">
                     <input type="hidden" name="excluir_id" value="<?= (int)$r['id_rota'] ?>">
                     <input type="hidden" name="volta" value="<?= e($qs) ?>">
-                    <button type="submit">Excluir</button>
+                    <button class="botao botao-perigo" type="submit">Excluir</button>
                 </form>
             </td>
             <?php endif; ?>
@@ -143,4 +163,10 @@ mostrarFlash();
     </tbody>
 </table>
 <?php endif; $stmt->close(); ?>
+
+<?php if ($eh_admin): ?>
+<div class="acoes-pagina">
+    <a class="botao botao-primario botao-largo" href="rotas_form.php<?= $qs !== '' ? '?volta=' . urlencode($qs) : '' ?>">Adicionar</a>
+</div>
+<?php endif; ?>
 <?php require __DIR__ . '/includes/rodape.php'; ?>

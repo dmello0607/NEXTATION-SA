@@ -46,22 +46,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Login - Sistema Ferroviario</title>
+    <title>Entrar - Nextation</title>
     <link rel="stylesheet" href="assets/css/estilo.css">
 </head>
-<body>
-<main>
-    <h1>Sistema de Monitoramento Ferroviario</h1>
-    <?php if ($erro !== ''): ?>
-        <p class="erro"><?= e($erro) ?></p>
-    <?php endif; ?>
-    <form method="POST" action="index.php">
-        <label for="login">Login</label>
-        <input type="text" id="login" name="login" value="<?= e($login) ?>" required>
-        <label for="senha">Senha</label>
-        <input type="password" id="senha" name="senha" required>
-        <button type="submit">Entrar</button>
-    </form>
+<body class="pagina pagina-index pagina-publica">
+<main class="tela-entrada">
+
+    <header class="entrada-marca">
+        <img class="marca-logo" src="assets/img/logo.png" alt="Logo do Nextation">
+        <p class="marca-nome">Nextation</p>
+    </header>
+
+    <section class="cartao-formulario" aria-labelledby="titulo-entrar">
+        <h1 id="titulo-entrar" class="titulo-pagina">Entrar</h1>
+
+        <?php if ($erro !== ''): ?>
+            <div class="mensagens" role="alert"><p class="mensagem mensagem-erro"><?= e($erro) ?></p></div>
+        <?php endif; ?>
+
+        <form class="formulario" method="POST" action="index.php">
+            <div class="campo">
+                <label class="campo-rotulo" for="login">Login</label>
+                <input class="campo-entrada" type="text" id="login" name="login" value="<?= e($login) ?>" autocomplete="username" required>
+            </div>
+            <div class="campo">
+                <label class="campo-rotulo" for="senha">Senha</label>
+                <input class="campo-entrada" type="password" id="senha" name="senha" autocomplete="current-password" required>
+            </div>
+            <div class="formulario-acoes">
+                <button class="botao botao-primario" type="submit">Entrar</button>
+            </div>
+        </form>
+
+        <p class="links-auxiliares"><a href="recupera_senha.php">Esqueci minha senha</a></p>
+    </section>
+
 </main>
 </body>
 </html>

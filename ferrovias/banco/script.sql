@@ -4,6 +4,8 @@ CREATE DATABASE IF NOT EXISTS ferrovias_db CHARACTER SET utf8mb4 COLLATE utf8mb4
 USE ferrovias_db;
 
 SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS relatorios;
+DROP TABLE IF EXISTS recuperacoes_senha;
 DROP TABLE IF EXISTS alertas;
 DROP TABLE IF EXISTS leituras;
 DROP TABLE IF EXISTS rotas;
@@ -93,6 +95,29 @@ CREATE TABLE limites (
     PRIMARY KEY (tipo)
 );
 
+-- Historico de relatorios gerados (quem gerou, quando e com quais filtros)
+CREATE TABLE relatorios (
+    id_relatorio INT NOT NULL AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    tipo VARCHAR(40) NOT NULL,
+    filtros VARCHAR(255) NOT NULL,
+    gerado_em DATETIME NOT NULL,
+    PRIMARY KEY (id_relatorio),
+    CONSTRAINT fk_relatorios_usuarios FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario) ON DELETE RESTRICT
+);
+
+-- Recuperacao de senha: guarda so o HASH do token (como a senha, o token nunca fica legivel)
+CREATE TABLE recuperacoes_senha (
+    id_recuperacao INT NOT NULL AUTO_INCREMENT,
+    id_usuario INT NOT NULL,
+    token_hash CHAR(64) NOT NULL,
+    expira_em DATETIME NOT NULL,
+    usado TINYINT(1) NOT NULL DEFAULT 0,
+    PRIMARY KEY (id_recuperacao),
+    UNIQUE KEY uq_recuperacoes_token (token_hash),
+    CONSTRAINT fk_recuperacoes_usuarios FOREIGN KEY (id_usuario) REFERENCES usuarios (id_usuario) ON DELETE CASCADE
+);
+
 -- ---------- DADOS DE EXEMPLO ----------
 -- Senha de todos os usuarios de teste: 123456 (guardada em hash bcrypt)
 INSERT INTO usuarios (nome, login, senha, papel) VALUES
@@ -143,3 +168,14 @@ INSERT INTO alertas (id_leitura, tipo, severidade, mensagem, data_hora) VALUES
 (5, 'temperatura_motor', 'atencao', 'Temperatura 96.00 C acima do limite de 90.00 C',      '2026-11-05 15:10:00'),
 (6, 'temperatura_motor', 'critico', 'Temperatura 110.00 C acima do limite de 90.00 C',     '2026-11-05 16:10:00'),
 (8, 'consumo_energia',   'critico', 'Consumo 560.00 kWh acima do limite de 500.00 kWh',    '2026-11-09 09:30:00');
+
+INSERT INTO relatorios (id_usuario, tipo, filtros, gerado_em) VALUES
+(1, 'alertas_por_trem', '{"id_trem":0,"data_inicio":"2026-11-01","data_fim":"2026-11-09","severidade":""}', '2026-11-09 10:00:00'),
+(1, 'alertas_por_trem', '{"id_trem":1,"data_inicio":"2026-11-05","data_fim":"2026-11-05","severidade":"critico"}', '2026-11-09 10:05:00'),
+(1, 'alertas_por_trem', '{"id_trem":2,"data_inicio":"2026-11-01","data_fim":"2026-11-30","severidade":""}', '2026-11-09 10:12:00');
+
+-- Tokens de exemplo (ja usados ou expirados; nenhum funciona)
+INSERT INTO recuperacoes_senha (id_usuario, token_hash, expira_em, usado) VALUES
+(2, SHA2('exemplo-token-1', 256), '2026-10-01 10:30:00', 1),
+(3, SHA2('exemplo-token-2', 256), '2026-10-15 15:30:00', 0),
+(3, SHA2('exemplo-token-3', 256), '2026-11-02 09:30:00', 1);

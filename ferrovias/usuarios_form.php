@@ -106,38 +106,64 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 $editando = $id_usuario > 0;
 $titulo = $editando ? 'Editar usuário' : 'Cadastrar usuário';
+$voltar = 'usuarios.php';
 require __DIR__ . '/includes/cabecalho.php';
 ?>
-<h1><?= e($titulo) ?></h1>
-<?php foreach ($erros as $erro): ?><p class="erro"><?= e($erro) ?></p><?php endforeach; ?>
-<form method="POST" action="usuarios_form.php">
+<section class="pagina-cabecalho">
+    <h1 class="titulo-pagina"><?= e($titulo) ?></h1>
+</section>
+
+<?php mostrarErros($erros); ?>
+
+<form class="formulario formulario-usuario" method="POST" action="usuarios_form.php">
     <input type="hidden" name="id_usuario" value="<?= (int)$id_usuario ?>">
 
-    <label for="nome">Nome</label>
-    <input type="text" id="nome" name="nome" maxlength="80" value="<?= e($dados['nome']) ?>" required>
+    <fieldset class="grupo grupo-dados-pessoais">
+        <legend class="grupo-titulo">Dados pessoais</legend>
+        <div class="campo">
+            <label class="campo-rotulo" for="nome">Nome</label>
+            <input class="campo-entrada" type="text" id="nome" name="nome" maxlength="80" value="<?= e($dados['nome']) ?>" required>
+        </div>
+        <div class="campo">
+            <label class="campo-rotulo" for="login">Login</label>
+            <?php if ($editando): ?>
+                <input class="campo-entrada" type="text" id="login" value="<?= e($dados['login']) ?>" disabled>
+                <small class="campo-ajuda">O login não pode ser alterado.</small>
+            <?php else: ?>
+                <input class="campo-entrada" type="text" id="login" name="login" maxlength="30" value="<?= e($dados['login']) ?>" autocomplete="off" required>
+            <?php endif; ?>
+        </div>
+    </fieldset>
 
-    <label for="login">Login</label>
-    <?php if ($editando): ?>
-        <input type="text" id="login" value="<?= e($dados['login']) ?>" disabled>
-    <?php else: ?>
-        <input type="text" id="login" name="login" maxlength="30" value="<?= e($dados['login']) ?>" required>
-    <?php endif; ?>
+    <fieldset class="grupo grupo-cargo">
+        <legend class="grupo-titulo">Cargo</legend>
+        <div class="campo campo-opcoes">
+            <div class="opcoes" role="radiogroup" aria-label="Cargo">
+                <?php foreach (papeisSistema() as $valor => $rotulo): ?>
+                    <label class="opcao cargo-<?= e($valor) ?>">
+                        <input type="radio" name="papel" value="<?= e($valor) ?>" <?= $dados['papel'] === $valor ? 'checked' : '' ?> required>
+                        <span class="opcao-texto"><?= e($rotulo) ?></span>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+        </div>
+    </fieldset>
 
-    <label for="papel">Perfil</label>
-    <select id="papel" name="papel" required>
-        <option value="">Selecione</option>
-        <?php foreach ($papeis_validos as $valor => $rotulo): ?>
-            <option value="<?= e($valor) ?>" <?= $dados['papel'] === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
-        <?php endforeach; ?>
-    </select>
+    <fieldset class="grupo grupo-acesso">
+        <legend class="grupo-titulo">Acesso</legend>
+        <div class="campo">
+            <label class="campo-rotulo" for="senha"><?= $editando ? 'Nova senha' : 'Senha' ?></label>
+            <input class="campo-entrada" type="password" id="senha" name="senha" autocomplete="new-password" <?= $editando ? '' : 'required' ?>>
+            <small class="campo-ajuda"><?= $editando ? 'Deixe em branco para manter a senha atual. ' : '' ?>Mínimo de 6 caracteres.</small>
+        </div>
+        <div class="campo">
+            <label class="campo-rotulo" for="senha2">Confirmar senha</label>
+            <input class="campo-entrada" type="password" id="senha2" name="senha2" autocomplete="new-password" <?= $editando ? '' : 'required' ?>>
+        </div>
+    </fieldset>
 
-    <label for="senha"><?= $editando ? 'Nova senha (deixe em branco para manter a atual)' : 'Senha' ?></label>
-    <input type="password" id="senha" name="senha" <?= $editando ? '' : 'required' ?>>
-
-    <label for="senha2">Confirmar senha</label>
-    <input type="password" id="senha2" name="senha2" <?= $editando ? '' : 'required' ?>>
-
-    <button type="submit">Salvar</button>
-    <a href="usuarios.php">Cancelar</a>
+    <div class="formulario-acoes">
+        <button class="botao botao-primario botao-largo" type="submit"><?= $editando ? 'Salvar' : 'Adicionar' ?></button>
+    </div>
 </form>
 <?php require __DIR__ . '/includes/rodape.php'; ?>

@@ -89,37 +89,108 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dados = array_merge($dados, array_map('strval', array_map(fn($v) => $v ?? '', $linha)));
 }
 
-$titulo = $id_trem > 0 ? 'Editar trem' : 'Cadastrar trem';
+$editando = $id_trem > 0;
+$titulo = $editando ? 'Editar ' . ($dados['prefixo'] !== '' ? $dados['prefixo'] : 'trem') : 'Cadastrar trem';
+$voltar = 'trens.php';
+
+// Situacao atual do trem (so na edicao): ultima velocidade e ultima atualizacao vindas das leituras
+$velocidade_atual = null;
+$ultima_atualizacao = null;
+if ($editando) {
+    $stmt = $conexao->prepare(
+        "SELECT leituras.valor, leituras.unidade FROM leituras
+         INNER JOIN sensores ON sensores.id_sensor = leituras.id_sensor
+         WHERE sensores.id_trem = ? AND sensores.tipo = 'velocidade'
+         ORDER BY leituras.data_hora DESC, leituras.id_leitura DESC LIMIT 1"
+    );
+    $stmt->bind_param('i', $id_trem);
+    $stmt->execute();
+    $velocidade_atual = $stmt->get_result()->fetch_assoc();
+    $stmt->close();
+
+    $stmt = $conexao->prepare(
+        'SELECT MAX(leituras.data_hora) AS ultima FROM leituras
+         INNER JOIN sensores ON sensores.id_sensor = leituras.id_sensor WHERE sensores.id_trem = ?'
+    );
+    $stmt->bind_param('i', $id_trem);
+    $stmt->execute();
+    $ultima_atualizacao = $stmt->get_result()->fetch_assoc()['ultima'];
+    $stmt->close();
+}
+
 require __DIR__ . '/includes/cabecalho.php';
 ?>
-<h1><?= e($titulo) ?></h1>
-<?php foreach ($erros as $erro): ?><p class="erro"><?= e($erro) ?></p><?php endforeach; ?>
-<form method="POST" action="trens_form.php">
+<section class="pagina-cabecalho">
+    <h1 class="titulo-pagina"><?= e($titulo) ?></h1>
+</section>
+
+<?php if ($editando): ?>
+<section class="resumo-trem" aria-label="Situação atual do trem">
+    <p class="resumo-status"><span class="selo <?= e(classeStatusTrem($dados['status'])) ?>"><?= e(statusTrens()[$dados['status']] ?? '') ?></span></p>
+    <dl class="resumo-lista">
+        <div class="resumo-item">
+            <dt>Velocidade atual</dt>
+            <dd><?= $velocidade_atual ? e(number_format((float)$velocidade_atual['valor'], 0, ',', '.') . ' ' . $velocidade_atual['unidade']) : 'Sem leitura' ?></dd>
+        </div>
+        <div class="resumo-item">
+            <dt>Última atualização</dt>
+            <dd><?= $ultima_atualizacao ? e(date('d/m/Y H:i', strtotime($ultima_atualizacao))) : 'Sem leitura' ?></dd>
+        </div>
+    </dl>
+</section>
+<?php endif; ?>
+
+<?php mostrarErros($erros); ?>
+
+<form class="formulario formulario-trem" method="POST" action="trens_form.php">
     <input type="hidden" name="id_trem" value="<?= (int)$id_trem ?>">
 
-    <label for="prefixo">Prefixo</label>
-    <input type="text" id="prefixo" name="prefixo" maxlength="10" placeholder="TR-204" value="<?= e($dados['prefixo']) ?>" required>
+    <fieldset class="grupo grupo-identificacao">
+        <legend class="grupo-titulo">Identificação</legend>
+        <div class="campo">
+            <label class="campo-rotulo" for="prefixo">ID do trem (prefixo)</label>
+            <input class="campo-entrada" type="text" id="prefixo" name="prefixo" maxlength="10" placeholder="TR-204" value="<?= e($dados['prefixo']) ?>" required>
+        </div>
+        <div class="campo">
+            <label class="campo-rotulo" for="modelo">Modelo</label>
+            <input class="campo-entrada" type="text" id="modelo" name="modelo" maxlength="60" value="<?= e($dados['modelo']) ?>" required>
+        </div>
+        <div class="campo">
+            <label class="campo-rotulo" for="ano">Ano</label>
+            <input class="campo-entrada" type="number" id="ano" name="ano" min="1900" max="2100" value="<?= e($dados['ano']) ?>" required>
+        </div>
+    </fieldset>
 
-    <label for="modelo">Modelo</label>
-    <input type="text" id="modelo" name="modelo" maxlength="60" value="<?= e($dados['modelo']) ?>" required>
+    <fieldset class="grupo grupo-especificacoes">
+        <legend class="grupo-titulo">Especificações</legend>
+        <div class="campo">
+            <label class="campo-rotulo" for="capacidade">Capacidade (toneladas)</label>
+            <input class="campo-entrada" type="text" id="capacidade" name="capacidade" inputmode="decimal" value="<?= e($dados['capacidade']) ?>" required>
+        </div>
+    </fieldset>
 
-    <label for="ano">Ano</label>
-    <input type="number" id="ano" name="ano" min="1900" max="2100" value="<?= e($dados['ano']) ?>" required>
+    <fieldset class="grupo grupo-operacional">
+        <legend class="grupo-titulo">Operacional</legend>
+        <div class="campo campo-opcoes">
+            <span class="campo-rotulo" id="rotulo-status">Status</span>
+            <div class="opcoes" role="radiogroup" aria-labelledby="rotulo-status">
+                <?php foreach (statusTrens() as $valor => $rotulo): ?>
+                    <label class="opcao <?= e(classeStatusTrem($valor)) ?>">
+                        <input type="radio" name="status" value="<?= e($valor) ?>" <?= $dados['status'] === $valor ? 'checked' : '' ?> required>
+                        <span class="opcao-texto"><?= e($rotulo) ?></span>
+                    </label>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <div class="campo">
+            <label class="campo-rotulo" for="ultima_inspecao">Última inspeção</label>
+            <input class="campo-entrada" type="date" id="ultima_inspecao" name="ultima_inspecao" value="<?= e($dados['ultima_inspecao']) ?>">
+            <small class="campo-ajuda">Opcional.</small>
+        </div>
+    </fieldset>
 
-    <label for="status">Status</label>
-    <select id="status" name="status" required>
-        <?php foreach (statusTrens() as $valor => $rotulo): ?>
-            <option value="<?= e($valor) ?>" <?= $dados['status'] === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
-        <?php endforeach; ?>
-    </select>
-
-    <label for="capacidade">Capacidade (toneladas)</label>
-    <input type="text" id="capacidade" name="capacidade" value="<?= e($dados['capacidade']) ?>" required>
-
-    <label for="ultima_inspecao">Última inspeção (opcional)</label>
-    <input type="date" id="ultima_inspecao" name="ultima_inspecao" value="<?= e($dados['ultima_inspecao']) ?>">
-
-    <button type="submit">Salvar</button>
-    <a href="trens.php">Cancelar</a>
+    <div class="formulario-acoes">
+        <button class="botao botao-primario botao-largo" type="submit"><?= $editando ? 'Salvar' : 'Adicionar' ?></button>
+    </div>
 </form>
 <?php require __DIR__ . '/includes/rodape.php'; ?>

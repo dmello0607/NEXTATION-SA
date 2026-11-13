@@ -106,32 +106,50 @@ $lista = $conexao->query(
 );
 
 $titulo = 'Simulador de leituras';
+$voltar = 'dashboard.php';
 require __DIR__ . '/includes/cabecalho.php';
 mostrarFlash();
 ?>
-<h1>Simulador de leituras</h1>
-<p>Gera leituras como se viessem dos sensores. Se marcar "fora do limite", os valores ficam acima do limite e geram alertas.</p>
-<?php foreach ($erros as $erro): ?><p class="erro"><?= e($erro) ?></p><?php endforeach; ?>
+<section class="pagina-cabecalho">
+    <h1 class="titulo-pagina">Simulador de leituras</h1>
+    <p class="subtitulo">Gera leituras como se viessem dos sensores. Com "fora do limite" marcado, os valores ficam acima do limite e geram alertas.</p>
+</section>
+
+<?php mostrarErros($erros); ?>
+
 <?php if ($lista->num_rows === 0): ?>
-    <p>Nenhum sensor disponível. Cadastre um sensor de velocidade, temperatura ou consumo primeiro.</p>
+    <p class="estado-vazio">Nenhum sensor disponível. Cadastre um sensor de velocidade, temperatura ou consumo primeiro.</p>
 <?php else: ?>
-<form method="POST" action="simulador.php">
-    <label for="id_sensor">Sensor</label>
-    <select id="id_sensor" name="id_sensor" required>
-        <option value="">Selecione o sensor</option>
-        <?php while ($s = $lista->fetch_assoc()): ?>
-            <option value="<?= (int)$s['id_sensor'] ?>" <?= $id_sensor === (int)$s['id_sensor'] ? 'selected' : '' ?>>
-                <?= e($s['codigo']) ?> — <?= e($s['prefixo']) ?> (<?= e(tiposSensor()[$s['tipo']] ?? $s['tipo']) ?>)
-            </option>
-        <?php endwhile; ?>
-    </select>
+<form class="formulario formulario-simulador" method="POST" action="simulador.php">
+    <fieldset class="grupo grupo-simulacao">
+        <legend class="grupo-titulo">Simulação</legend>
+        <div class="campo">
+            <label class="campo-rotulo" for="id_sensor">Sensor</label>
+            <select class="campo-entrada" id="id_sensor" name="id_sensor" required>
+                <option value="">Selecione o sensor</option>
+                <?php while ($s = $lista->fetch_assoc()): ?>
+                    <option value="<?= (int)$s['id_sensor'] ?>" <?= $id_sensor === (int)$s['id_sensor'] ? 'selected' : '' ?>>
+                        <?= e($s['codigo']) ?> — <?= e($s['prefixo']) ?> (<?= e(tiposSensor()[$s['tipo']] ?? $s['tipo']) ?>)
+                    </option>
+                <?php endwhile; ?>
+            </select>
+        </div>
+        <div class="campo">
+            <label class="campo-rotulo" for="quantidade">Quantidade de leituras</label>
+            <input class="campo-entrada" type="number" id="quantidade" name="quantidade" min="1" max="200" value="<?= (int)$quantidade ?>" required>
+            <small class="campo-ajuda">De 1 a 200.</small>
+        </div>
+        <div class="campo campo-opcoes">
+            <label class="opcao opcao-caixa">
+                <input type="checkbox" name="fora_do_limite" <?= $fora ? 'checked' : '' ?>>
+                <span class="opcao-texto">Gerar valores fora do limite</span>
+            </label>
+        </div>
+    </fieldset>
 
-    <label for="quantidade">Quantidade de leituras (1 a 200)</label>
-    <input type="number" id="quantidade" name="quantidade" min="1" max="200" value="<?= (int)$quantidade ?>" required>
-
-    <label><input type="checkbox" name="fora_do_limite" <?= $fora ? 'checked' : '' ?>> Gerar valores fora do limite</label>
-
-    <button type="submit">Gerar leituras</button>
+    <div class="formulario-acoes">
+        <button class="botao botao-primario botao-largo" type="submit">Gerar leituras</button>
+    </div>
 </form>
 <?php endif; ?>
 <?php require __DIR__ . '/includes/rodape.php'; ?>

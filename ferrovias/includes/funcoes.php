@@ -5,6 +5,12 @@ function e($texto)
     return htmlspecialchars((string)$texto, ENT_QUOTES, 'UTF-8');
 }
 
+// Marcador de icone (o desenho e feito no CSS: icone-inicio, icone-frota, icone-sino...)
+function icone($nome)
+{
+    return '<span class="icone icone-' . e($nome) . '" aria-hidden="true"></span>';
+}
+
 // Mensagem que sobrevive ao redirecionamento (apos gravar/excluir)
 function flash($mensagem, $tipo = 'sucesso')
 {
@@ -14,21 +20,60 @@ function flash($mensagem, $tipo = 'sucesso')
 function mostrarFlash()
 {
     if (isset($_SESSION['flash'])) {
-        echo '<p class="' . e($_SESSION['flash']['tipo']) . '">' . e($_SESSION['flash']['msg']) . '</p>';
+        $tipo = $_SESSION['flash']['tipo'] === 'erro' ? 'erro' : 'sucesso';
+        echo '<div class="mensagens" role="' . ($tipo === 'erro' ? 'alert' : 'status') . '">'
+           . '<p class="mensagem mensagem-' . $tipo . '">' . e($_SESSION['flash']['msg']) . '</p></div>';
         unset($_SESSION['flash']);
     }
 }
 
-// Status do trem -> texto e classe de cor semantica (verde/amarelo/vermelho)
-function statusTrens()
+// Lista de erros de validacao
+function mostrarErros($erros)
+{
+    if (count($erros) === 0) {
+        return;
+    }
+    echo '<div class="mensagens" role="alert">';
+    foreach ($erros as $erro) {
+        echo '<p class="mensagem mensagem-erro">' . e($erro) . '</p>';
+    }
+    echo '</div>';
+}
+
+function mostrarSucesso($texto)
+{
+    if ($texto !== '') {
+        echo '<div class="mensagens" role="status"><p class="mensagem mensagem-sucesso">' . e($texto) . '</p></div>';
+    }
+}
+
+// Nomes de perfil mostrados na tela (os valores gravados no banco continuam os do guia):
+// Gestor = administrador | Maquinista = maquinista | Funcionario = usuario_comum
+function papeisSistema()
 {
     return [
-        'em_operacao' => 'Em operação',
-        'manutencao'  => 'Em manutenção',
-        'inativo'     => 'Inativo',
+        'administrador' => 'Gestor',
+        'maquinista'    => 'Máquinista',
+        'usuario_comum' => 'Funcionário',
     ];
 }
 
+function rotuloPapel($papel)
+{
+    return papeisSistema()[$papel] ?? $papel;
+}
+
+// Status do trem -> texto da tela (valores do banco: em_operacao, manutencao, inativo)
+function statusTrens()
+{
+    return [
+        'em_operacao' => 'Ativo',
+        'manutencao'  => 'Manutenção',
+        'inativo'     => 'Parado',
+    ];
+}
+
+// Classe de cor semantica (verde/amarelo/vermelho)
 function classeStatusTrem($status)
 {
     $mapa = ['em_operacao' => 'normal', 'manutencao' => 'atencao', 'inativo' => 'critico'];
@@ -89,15 +134,15 @@ function paginacaoLinks($arquivo, $pagina, $total_paginas, $params)
         return;
     }
     unset($params['pagina']);
-    echo '<p class="paginacao">';
+    echo '<nav class="paginacao" aria-label="Paginação">';
     if ($pagina > 1) {
-        echo '<a href="' . e($arquivo . '?' . http_build_query($params + ['pagina' => $pagina - 1])) . '">&laquo; Anterior</a> ';
+        echo '<a class="paginacao-anterior" href="' . e($arquivo . '?' . http_build_query($params + ['pagina' => $pagina - 1])) . '">Anterior</a>';
     }
-    echo 'Página ' . (int)$pagina . ' de ' . (int)$total_paginas;
+    echo '<span class="paginacao-atual">Página ' . (int)$pagina . ' de ' . (int)$total_paginas . '</span>';
     if ($pagina < $total_paginas) {
-        echo ' <a href="' . e($arquivo . '?' . http_build_query($params + ['pagina' => $pagina + 1])) . '">Próxima &raquo;</a>';
+        echo '<a class="paginacao-proxima" href="' . e($arquivo . '?' . http_build_query($params + ['pagina' => $pagina + 1])) . '">Próxima</a>';
     }
-    echo '</p>';
+    echo '</nav>';
 }
 
 function rotulosSeveridade()

@@ -64,47 +64,62 @@ $stmt->execute();
 $resultado = $stmt->get_result();
 
 $titulo = 'Usuários';
+$voltar = 'dashboard.php';
 require __DIR__ . '/includes/cabecalho.php';
 mostrarFlash();
 ?>
-<h1>Usuários</h1>
-<p><a href="usuarios_form.php">Cadastrar novo usuário</a></p>
+<section class="pagina-cabecalho">
+    <h1 class="titulo-pagina">Usuários</h1>
+</section>
 
-<form method="GET" action="usuarios.php">
-    <input type="text" name="busca" placeholder="Nome ou login" value="<?= e($busca) ?>">
-    <select name="papel">
-        <option value="">Todos os perfis</option>
-        <?php foreach ($papeis as $valor => $rotulo): ?>
-            <option value="<?= e($valor) ?>" <?= $papel === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
-        <?php endforeach; ?>
-    </select>
-    <select name="ativo">
-        <option value="">Ativos e inativos</option>
-        <option value="1" <?= $ativo === '1' ? 'selected' : '' ?>>Somente ativos</option>
-        <option value="0" <?= $ativo === '0' ? 'selected' : '' ?>>Somente inativos</option>
-    </select>
-    <button type="submit">Filtrar</button>
-    <a href="usuarios.php">Limpar</a>
+<form class="filtros" method="GET" action="usuarios.php" role="search">
+    <div class="campo campo-busca">
+        <label class="visualmente-oculto" for="busca">Buscar</label>
+        <input class="campo-entrada" type="search" id="busca" name="busca" placeholder="Buscar por nome ou login..." value="<?= e($busca) ?>">
+    </div>
+    <div class="campo">
+        <label class="visualmente-oculto" for="papel">Cargo</label>
+        <select class="campo-entrada" id="papel" name="papel">
+            <option value="">Todos os cargos</option>
+            <?php foreach (papeisSistema() as $valor => $rotulo): ?>
+                <option value="<?= e($valor) ?>" <?= $papel === $valor ? 'selected' : '' ?>><?= e($rotulo) ?></option>
+            <?php endforeach; ?>
+        </select>
+    </div>
+    <div class="campo">
+        <label class="visualmente-oculto" for="ativo">Situação</label>
+        <select class="campo-entrada" id="ativo" name="ativo">
+            <option value="">Ativos e inativos</option>
+            <option value="1" <?= $ativo === '1' ? 'selected' : '' ?>>Somente ativos</option>
+            <option value="0" <?= $ativo === '0' ? 'selected' : '' ?>>Somente inativos</option>
+        </select>
+    </div>
+    <div class="filtros-acoes">
+        <button class="botao botao-secundario" type="submit">Filtrar</button>
+        <a class="botao-link" href="usuarios.php">Limpar</a>
+    </div>
 </form>
 
 <?php if ($resultado->num_rows === 0): ?>
-    <p>Nenhum usuário encontrado.</p>
+    <p class="estado-vazio">Nenhum usuário encontrado.</p>
 <?php else: ?>
-<table>
-    <thead><tr><th>Nome</th><th>Login</th><th>Perfil</th><th>Situação</th><th>Ações</th></tr></thead>
+<table class="tabela tabela-cartoes tabela-usuarios">
+    <thead>
+        <tr><th scope="col">Nome</th><th scope="col">Cargo</th><th scope="col">Login</th><th scope="col">Situação</th><th scope="col">Ações</th></tr>
+    </thead>
     <tbody>
     <?php while ($u = $resultado->fetch_assoc()): ?>
-        <tr>
-            <td><?= e($u['nome']) ?></td>
-            <td><?= e($u['login']) ?></td>
-            <td><?= e($papeis[$u['papel']] ?? $u['papel']) ?></td>
-            <td class="<?= $u['ativo'] ? 'status-normal' : 'status-critico' ?>"><?= $u['ativo'] ? 'Ativo' : 'Inativo' ?></td>
-            <td>
-                <a href="usuarios_form.php?id_usuario=<?= (int)$u['id_usuario'] ?>">Editar</a>
+        <tr class="linha<?= $u['ativo'] ? '' : ' linha-inativa' ?>">
+            <td class="celula-principal" data-label="Nome"><span class="avatar" aria-hidden="true"></span><?= e($u['nome']) ?></td>
+            <td class="celula-cargo cargo-<?= e($u['papel']) ?>" data-label="Cargo"><?= e(rotuloPapel($u['papel'])) ?></td>
+            <td data-label="Login"><?= e($u['login']) ?></td>
+            <td data-label="Situação"><span class="selo <?= $u['ativo'] ? 'status-normal' : 'status-critico' ?>"><?= $u['ativo'] ? 'Ativo' : 'Inativo' ?></span></td>
+            <td class="celula-acoes" data-label="Ações">
+                <a class="botao botao-editar" href="usuarios_form.php?id_usuario=<?= (int)$u['id_usuario'] ?>">Editar</a>
                 <?php if ((int)$u['id_usuario'] !== (int)$_SESSION['usuario_id']): ?>
-                <form method="POST" action="usuarios.php" style="display:inline" onsubmit="return confirm('Confirma a alteração da situação deste usuário?');">
+                <form class="form-linha" method="POST" action="usuarios.php" onsubmit="return confirm('Confirma a alteração da situação deste usuário?');">
                     <input type="hidden" name="alternar_id" value="<?= (int)$u['id_usuario'] ?>">
-                    <button type="submit"><?= $u['ativo'] ? 'Desativar' : 'Reativar' ?></button>
+                    <button class="botao <?= $u['ativo'] ? 'botao-perigo' : 'botao-secundario' ?>" type="submit"><?= $u['ativo'] ? 'Desativar' : 'Reativar' ?></button>
                 </form>
                 <?php endif; ?>
             </td>
@@ -113,4 +128,8 @@ mostrarFlash();
     </tbody>
 </table>
 <?php endif; $stmt->close(); ?>
+
+<div class="acoes-pagina">
+    <a class="botao botao-primario botao-largo" href="usuarios_form.php">Adicionar</a>
+</div>
 <?php require __DIR__ . '/includes/rodape.php'; ?>

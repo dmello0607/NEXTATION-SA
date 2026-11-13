@@ -1,7 +1,13 @@
-/* CSS minimo: so as cores semanticas (o visual completo vem depois) */
-.erro { color: #b00020; }
-.sucesso { color: #1b7a2e; }
+/* CSS minimo: so mantem as cores semanticas funcionando. O visual completo e feito a parte. */
+.mensagem-erro { color: #b00020; }
+.mensagem-sucesso { color: #1b7a2e; }
 .status-normal, .sev-normal { color: #1b7a2e; font-weight: bold; }
 .status-atencao, .sev-atencao { color: #b58900; font-weight: bold; }
 .status-critico, .sev-critico { color: #b00020; font-weight: bold; }
 .linha-critica { background: #fde8e8; }
+.visualmente-oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media print { .topo, .navegacao, .nao-imprimir { display: none; } }
+
+/* Tamanho do logo (sem isso a imagem aparece no tamanho original, 408px) */
+.marca-logo { width: 40px; height: 40px; vertical-align: middle; }
+.entrada-marca .marca-logo { width: 96px; height: 96px; }
