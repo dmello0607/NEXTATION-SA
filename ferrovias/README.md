@@ -1,100 +1,185 @@
-# Sistema de Monitoramento Ferroviario (Nextation)
+# Nextation — Sistema de Monitoramento Ferroviário
+
+Projeto de monitoramento de uma frota de trens, desenvolvido em PHP e MySQL/MariaDB para execução local no XAMPP. A interface utiliza tema escuro e layout responsivo, com base nos mockups da equipe.
 
 ## Equipe
-[PREENCHER: nomes dos integrantes e turma]
 
-## O que o sistema faz
-O sistema monitora uma frota de trens. Cada trem tem sensores (velocidade, temperatura do motor, consumo de energia) que enviam leituras. Como nao ha sensores fisicos, um simulador gera as leituras no banco.
+Preencher os nomes dos integrantes e a turma.
 
-Toda leitura acima do limite do seu tipo vira um alerta automatico, classificado em atencao ou critico, que aparece na central de alertas e no painel. O sistema tambem cadastra trens, sensores, rotas e viagens programadas, gera relatorios de alertas por trem e periodo, e controla quem acessa o que por perfil (administrador, maquinista e usuario comum).
+## Funcionalidades
 
-O acesso exige login. As senhas ficam guardadas como hash e cada tela verifica a sessao e o perfil no servidor.
+- Login, recuperação de senha e controle de acesso por perfil.
+- Painel com situação da frota, monitoramento, alertas e próximas viagens, conforme o perfil.
+- Cadastro, edição, busca, filtros e exclusão de trens, sensores e rotas.
+- Validação de conflitos de horários nas viagens do mesmo trem.
+- Simulação de leituras de velocidade, temperatura do motor e consumo de energia.
+- Classificação de leituras e geração de alertas acima dos limites cadastrados.
+- Consulta de leituras e alertas com filtros e paginação.
+- Cadastro, edição e ativação/desativação de usuários.
+- Relatórios de alertas por trem e período, com histórico e impressão para salvar em PDF.
 
 ## Tecnologias
-PHP 8 (mysqli, consultas preparadas), MySQL/MariaDB, HTML, CSS, JavaScript (apenas confirmacao de exclusao e botao de imprimir). Ambiente: XAMPP.
 
-## Como instalar
-1. Copiar a pasta `ferrovias` para `C:\xampp\htdocs\`
-2. Iniciar Apache e MySQL no painel do XAMPP
-3. No phpMyAdmin, importar `banco/script.sql` (cria o banco `ferrovias_db`, as tabelas e os dados de exemplo; pode ser importado quantas vezes for preciso)
-4. Acessar http://localhost/ferrovias
-
-A conexao usa usuario `root` sem senha (padrao do XAMPP). Se for diferente, ajustar so o arquivo `config/conexao.php`.
-
-## Usuarios de teste
-| Login | Senha | Perfil |
-|---|---|---|
-| admin | 123456 | administrador (Gestor) |
-| maquinista | 123456 | maquinista (Maquinista) |
-| usuario | 123456 | usuario_comum (Funcionario) |
-
-## Telas do sistema
-| Arquivo | O que faz |
+| Tecnologia | Uso |
 |---|---|
-| `index.php` | Login |
-| `recupera_senha.php` | Recuperacao de senha (codigo simulado na tela, valido por 30 minutos) |
-| `sair.php` | Encerra a sessao |
-| `dashboard.php` | Painel: frota, alertas, sensores criticos por trem, proximas viagens (conteudo varia por perfil) |
-| `trens.php` / `trens_form.php` | Listar, buscar, filtrar por status, cadastrar, editar e excluir trens |
-| `sensores.php` / `sensores_form.php` | Gestao de sensores, com filtro por tipo e trem e indicador da ultima leitura |
-| `rotas.php` / `rotas_form.php` | Rotas e viagens programadas, com quatro filtros e bloqueio de horarios sobrepostos |
-| `simulador.php` | Gera leituras (e alertas) como se viessem dos sensores |
-| `leituras.php` | Leituras recebidas, com filtro por sensor e trem |
-| `notificacoes_alertas.php` | Central de alertas, filtros por severidade e tipo, critico em destaque |
-| `usuarios.php` / `usuarios_form.php` | Listar, cadastrar, editar e ativar/desativar usuarios |
-| `gera_relatorio.php` / `visualiza_relatorio.php` | Relatorio de alertas por trem e periodo, com historico |
+| PHP 8 com extensão `mysqli` | Aplicação, sessões e consultas preparadas |
+| MySQL/MariaDB | Banco de dados |
+| HTML e CSS | Interface responsiva e tema escuro |
+| JavaScript | Confirmação de ações e impressão pelo navegador |
+| XAMPP | Ambiente local com Apache, PHP e MariaDB |
+| Flaticon Uicons Regular Rounded 3.0.0 | Ícones locais da interface |
 
-Arquivos de apoio: `config/conexao.php` (unico lugar com os dados do banco), `includes/proteger.php` (exige sessao), `includes/permissao.php` (verifica perfil), `includes/cabecalho.php` e `rodape.php` (topo e menu), `includes/funcoes.php` (utilidades), `includes/limites.php` (limites e classificacao de severidade).
+Não há etapa de compilação nem instalação de dependências com npm ou Composer.
 
-## Decisoes tomadas
-Os valores de perfil gravados no banco e usados no codigo seguem o Guia de Uniformizacao de Telas: `administrador`, `maquinista` e `usuario_comum`. Na tela, seguindo o design da equipe, aparecem como **Gestor** (administrador), **Maquinista** e **Funcionario** (usuario comum). Telas ficam na raiz com nome canonico, tabelas no plural.
+## Como executar no XAMPP
 
-| Decisao | Escolha | Justificativa e consequencia futura |
+1. Mantenha o repositório em `C:\xampp\htdocs\Nextation\NEXTATION-SA`.
+2. No painel do XAMPP, inicie **Apache** e **MySQL**.
+3. Abra o [phpMyAdmin](http://localhost/phpmyadmin), vá em **Importar** e selecione [banco/script.sql](banco/script.sql), dentro da pasta `ferrovias`.
+4. Confirme que o banco `ferrovias_db` foi criado.
+5. Abra [Nextation no navegador](http://localhost/Nextation/NEXTATION-SA/ferrovias/).
+
+**Atenção:** importar novamente o script apaga e recria as tabelas do sistema, substituindo os registros pelos dados de exemplo. Faça backup antes de reimportar um banco com dados que deseja manter.
+
+Se preferir copiar apenas a pasta `ferrovias` para `C:\xampp\htdocs`, o endereço passa a ser `http://localhost/ferrovias/`.
+
+### Conexão com o banco
+
+As configurações ficam em [config/conexao.php](config/conexao.php):
+
+| Configuração | Valor padrão |
+|---|---|
+| Servidor | `localhost` |
+| Usuário | `root` |
+| Senha | Vazia |
+| Banco | `ferrovias_db` |
+| Codificação | `utf8mb4` |
+
+Ajuste esse arquivo se o seu ambiente utilizar outro usuário, senha ou servidor.
+
+### Contas de teste
+
+| Login | Senha | Perfil exibido |
 |---|---|---|
-| Tipo da coluna `papel` | ENUM | O proprio banco recusa perfil invalido. Consequencia: criar um perfil novo exige ALTER TABLE. |
-| Forma de conexao | mysqli orientado a objetos | Mesma forma do projeto base e das aulas; usada em todo o sistema, sem misturar. |
-| Algoritmo da senha | `PASSWORD_DEFAULT` (bcrypt) | Acompanha as versoes do PHP; o hash cabe em `VARCHAR(255)`. |
-| Perfis autorizados | Administrador: tudo. Maquinista: consulta sensores, leituras, alertas e rotas. Usuario comum: so painel (frota e proximas viagens). | Segue o guia de telas. Consequencia: o maquinista ve todos os trens, porque nao ha vinculo maquinista-trem no banco. |
-| Unicidade do prefixo do trem | `UNIQUE` no banco e verificacao no PHP antes de gravar | O banco garante mesmo se o PHP falhar; o PHP da mensagem clara. |
-| Status do trem | ENUM (`em_operacao`, `manutencao`, `inativo`), exibidos como Ativo, Manutencao e Parado | Impede valor invalido. Cores: verde, amarelo e vermelho. |
-| Estrutura do HTML | Casco unico (`includes/cabecalho.php` e `rodape.php`), tabelas com `data-label` que viram cartoes por CSS | O mesmo HTML serve ao desktop e ao celular; so o CSS muda. Ver `docs/estrutura_html.md`. |
-| `ON DELETE` de trem com sensores ou rotas | `RESTRICT` (impede a exclusao) | Em monitoramento, apagar o historico junto com o trem e indesejavel. Consequencia: para tirar um trem, remover antes os sensores e rotas (ou deixar o trem inativo). |
-| Vinculo sensor-trem | Obrigatorio (`id_trem NOT NULL`); segmento e informacao adicional | Resolve a divergencia entre os guias; o painel precisa de leitura por trem. |
-| Data e hora da rota | Campos separados (`DATE` e `TIME`) | Facilita o filtro por data. Consequencia: viagens que atravessam a meia-noite nao sao tratadas. |
-| Formato da leitura | Valor generico + unidade | Aceita sensor novo sem alterar a tabela. Consequencia: comparar medidas diferentes exige consultas mais elaboradas. |
-| Local dos limites | Tabela `limites` no banco | Ajuste sem mexer no codigo. Consequencia: ha uma consulta a mais ao classificar. |
-| Criterio de severidade | Ate o limite: normal. Ate 10% acima: atencao. Mais de 10% acima: critico. | Regra unica na funcao `classificarValor` (`includes/limites.php`). |
-| Alertas e notificacoes | Uma tabela so (`alertas`), exibida em `notificacoes_alertas.php` | Simplicidade. Consequencia: ainda nao ha aviso entregue a alguem (e-mail, push); exigiria tabela de notificacoes. |
-| Leitura e alerta | Gravados na mesma transacao | Nunca existe leitura fora do limite sem alerta, nem alerta sem leitura. |
-| Exclusao de leitura/sensor | `ON DELETE CASCADE` | Os alertas acompanham a leitura; as leituras acompanham o sensor. |
-| Exclusao de usuario | Nao existe: o administrador desativa | Preserva o historico (relatorios gerados). A sessao e conferida no banco a cada pagina, entao desativar vale na hora. |
-| Recuperacao de senha | Codigo de uso unico, valido por 30 minutos, guardado como hash | O envio por e-mail e simulado na tela. Em producao, trocar por e-mail real. |
-| Indices | Em `leituras` (`id_sensor` e `data_hora`) | Tabela que cresce e e filtrada por sensor e ordenada por data. Nas demais (dezenas de linhas) um indice nao compensa. |
-| Volume de dados | `LIMIT` e paginacao em leituras e alertas; limite de 500 linhas no detalhe do relatorio | Evita travar o navegador. |
+| `admin` | `123456` | Gestor |
+| `maquinista` | `123456` | Maquinista |
+| `usuario` | `123456` | Funcionário |
 
-## Limitacoes conhecidas
-- Interface visual: o HTML segue o design (Figma), mas o CSS responsivo (tabela no desktop e cartoes no celular) e o acabamento visual [PREENCHER: remover esta linha se o CSS for concluido].
-- Itens do design sem funcionalidade correspondente: cadastro publico de conta, login com Google, e-mail do usuario, status operacional e dados do maquinista, visualizacao de usuario com horas e tarefas, e campos do trem como categoria, carga, linha, terminal e maquinista (lista completa em `docs/estrutura_html.md`).
-- O maquinista ve todos os trens, sensores e alertas, nao apenas os do trem que opera (nao ha vinculo maquinista-trem no banco).
-- O usuario comum nao tem compra de passagens nem acompanhamento de viagens proprias; ve apenas o painel.
-- Recuperacao de senha sem e-mail real: o codigo aparece na tela.
-- Sem protecao contra tentativas repetidas de login e sem token CSRF nos formularios.
-- Viagens que atravessam a meia-noite nao sao suportadas (a chegada deve ser depois da partida, no mesmo dia).
-- Sem notificacoes entregues a pessoas (so a central de alertas).
-- Relatorio em PDF depende da impressao do navegador ("salvar como PDF").
-- Listas de trens, sensores, rotas e usuarios sem paginacao.
-- Sem testes automatizados; os testes estao no roteiro manual (`docs/roteiro_de_testes.md`).
+A página inicial sempre mostra o formulário de login, mesmo quando já existe uma sessão ativa. Após autenticar, o usuário é direcionado ao painel. Abrir a página de login não encerra uma sessão existente; para encerrá-la, use **Mais → Sair**.
 
-## Uso de inteligencia artificial
-Declaracao: a maior parte do codigo PHP e SQL deste repositorio (backend) e dos documentos em `docs/` foi gerada pela IA **Claude (Anthropic)**, a partir dos guias dos blocos 1 a 3 e do guia de fechamento fornecidos pelo professor. [PREENCHER: quem escreveu o HTML/CSS, se houve uso de IA nele, e ajustar a tabela ao modelo exigido pela unidade curricular.]
+### Problemas comuns
 
-| Parte | Ferramenta | O que foi pedido | O que a IA gerou | Como foi verificado | Quem da equipe domina |
-|---|---|---|---|---|---|
-| 1. Banco, conexao, login, sessao, sair, cadastro de usuarios | Claude | Backend do bloco 1 e base do bloco 2 | `script.sql`, `conexao.php`, `index.php`, `proteger.php`, `sair.php`, `usuarios_form.php` | Requisicoes de teste (login certo/errado, sem sessao, perfil) | [PREENCHER] |
-| 2. Trens e sensores | Claude | CRUD, busca, filtros, relacionamento | `trens*.php`, `sensores*.php`, `limites.php`, `funcoes.php` | CRUD, filtros, validacoes, exclusao bloqueada, permissoes | [PREENCHER] |
-| 3. Rotas | Claude | Rotas com 4 filtros e bloqueio de sobreposicao | `rotas*.php` | Filtros isolados e combinados, sobreposicao, permissoes | [PREENCHER] |
-| 4. Simulador, leituras e alertas | Claude | Simulador, leituras, central de alertas | `simulador.php`, `leituras.php`, `notificacoes_alertas.php` | Valores por tipo, transacao com falha forcada, consistencia leitura/alerta, cascata | [PREENCHER] |
-| 5. Painel e usuarios | Claude | Painel por perfil, gestao de usuarios | `dashboard.php`, `usuarios*.php`, revalidacao em `proteger.php` | Perfis, desativar usuario logado, protecao da propria conta | [PREENCHER] |
-| 6. Relatorios e recuperar senha | Claude | Relatorio de alertas, recuperacao de senha | `gera_relatorio.php`, `visualiza_relatorio.php`, `recupera_senha.php` | Periodo (ultimo dia incluido), token expirado/usado/hash | [PREENCHER] |
-| 7. Documentacao | Claude | README, roteiro de testes, guia para a verificacao oral, texto do manual | `README.md`, `docs/*` | Revisao pela equipe | [PREENCHER] |
-| 8. Estrutura HTML | Claude | Montar o HTML das telas a partir do design (Figma exportado em PDF), sem CSS | HTML dentro dos arquivos PHP, `includes/cabecalho.php`, `docs/estrutura_html.md`, `assets/img/logo.png` (recortado do design) | Validacao automatica da estrutura de todas as telas e regressao funcional (80 verificacoes) | [PREENCHER] |
+| Problema | O que verificar |
+|---|---|
+| Não foi possível conectar ao banco | MySQL iniciado, banco `ferrovias_db` importado e credenciais em `config/conexao.php` |
+| Página não encontrada | Apache iniciado, localização da pasta e endereço correspondente no navegador |
+| CSS ou ícones antigos | Atualize com **Ctrl + F5** |
+| Login recusado | Use uma conta de teste e confirme que ela está ativa |
+| Próximas viagens vazias | Os exemplos usam datas fixas; cadastre uma viagem futura com o perfil Gestor |
+
+## Perfis de acesso
+
+| Perfil na interface | Valor no banco | Permissões |
+|---|---|---|
+| Gestor | `administrador` | Acesso a todos os módulos e ações de gestão |
+| Maquinista | `maquinista` | Painel e consulta de sensores, leituras, alertas e rotas |
+| Funcionário | `usuario_comum` | Painel com situação da frota e próximas viagens |
+
+As permissões são verificadas no PHP. A cada página interna, a aplicação também consulta se o usuário continua ativo e atualiza seu nome e perfil na sessão.
+
+## Telas e arquivos
+
+| Arquivo | Função |
+|---|---|
+| `index.php` | Tela de login |
+| `recupera_senha.php` | Solicitação de código e redefinição de senha |
+| `sair.php` | Encerramento da sessão |
+| `dashboard.php` | Painel com conteúdo conforme o perfil |
+| `trens.php` / `trens_form.php` | Listagem e formulário de trens |
+| `sensores.php` / `sensores_form.php` | Listagem e formulário de sensores |
+| `rotas.php` / `rotas_form.php` | Rotas e viagens programadas |
+| `simulador.php` | Geração de leituras e alertas |
+| `leituras.php` | Consulta de leituras |
+| `notificacoes_alertas.php` | Central de alertas |
+| `usuarios.php` / `usuarios_form.php` | Gestão de usuários |
+| `gera_relatorio.php` / `visualiza_relatorio.php` | Geração, histórico e visualização de relatórios |
+
+```text
+ferrovias/
+├── assets/
+│   ├── css/estilo.css        # Estilos compartilhados e responsividade
+│   ├── fonts/               # Fonte local de ícones e referência de licença
+│   └── img/logo.png         # Logo do projeto
+├── banco/script.sql         # Estrutura e dados de exemplo
+├── config/conexao.php       # Conexão com MySQL/MariaDB
+├── docs/                    # Guias, manual e roteiro de testes
+├── includes/
+│   ├── cabecalho.php        # Cabeçalho e navegação
+│   ├── rodape.php           # Fechamento da página e crédito dos ícones
+│   ├── proteger.php         # Sessão e situação do usuário
+│   ├── permissao.php        # Controle de acesso por perfil
+│   ├── funcoes.php          # Utilidades, mensagens e rótulos
+│   └── limites.php          # Limites e classificação das leituras
+└── *.php                    # Telas do sistema
+```
+
+## Interface e ícones
+
+O CSS compartilhado define fundo escuro, superfícies arredondadas, ações em azul e estados em verde, amarelo e vermelho. No desktop, a navegação fica na lateral; no celular, na barra inferior. As listas são adaptadas para cartões em telas pequenas; as de trens e usuários também usam cartões em desktops maiores.
+
+A interface foi adaptada aos campos e funcionalidades existentes no PHP e no banco. Os mockups incluem recursos adicionais que ainda não estão implementados, listados nas limitações abaixo.
+
+Os ícones são **Uicons by [Flaticon](https://www.flaticon.com/uicons)**, na família Regular Rounded 3.0.0. A fonte está em `assets/fonts/uicons-regular-rounded.woff2`, com as referências de origem e licença em [assets/fonts/FLATICON.txt](assets/fonts/FLATICON.txt). Depois de baixados, os ícones não dependem de internet. O crédito também aparece no rodapé das telas internas.
+
+## Regras e decisões do sistema
+
+- **Senhas:** armazenadas com `password_hash(..., PASSWORD_DEFAULT)` e verificadas com `password_verify`.
+- **Consultas:** utilizam `mysqli` e parâmetros preparados nos filtros e operações com dados recebidos.
+- **Trem:** prefixo único; status `em_operacao`, `manutencao` ou `inativo`, exibidos como Ativo, Manutenção e Parado.
+- **Sensor:** sempre vinculado a um trem. Localização e segmento são informações adicionais.
+- **Severidade:** até o limite é normal; até 10% acima é atenção; acima disso é crítico. Os limites ficam na tabela `limites`.
+- **Simulação:** leitura e alerta são gravados na mesma transação.
+- **Exclusões:** trens com sensores ou rotas vinculadas não podem ser excluídos. Excluir um sensor remove suas leituras e alertas em cascata.
+- **Usuários:** são desativados, preservando o histórico. O gestor não pode desativar a própria conta nem rebaixar o próprio perfil.
+- **Rotas:** viagens do mesmo trem não podem ter horários sobrepostos no mesmo dia. Uma viagem sem chegada definida ocupa o restante do dia.
+- **Recuperação de senha:** código de uso único, válido por 30 minutos, armazenado como hash; o envio por e-mail é simulado na tela.
+- **Relatórios:** registram autor, filtros e data de geração; o detalhe exibe até 500 alertas. A exportação em PDF utiliza a impressão do navegador.
+
+## Limitações conhecidas
+
+- Não há sensores físicos: as leituras são geradas pelo simulador.
+- Não há cadastro público, autenticação com Google ou e-mail do usuário. O acesso utiliza login e senha.
+- O maquinista consulta dados de todos os trens, pois não existe vínculo entre maquinista e trem no banco.
+- Campos dos mockups como categoria do trem, carga, linha, terminal, maquinista e horas trabalhadas ainda não estão disponíveis.
+- O usuário comum não compra passagens nem acompanha viagens próprias.
+- A recuperação de senha não envia e-mail real.
+- Não há notificações por e-mail ou push; os alertas são consultados no sistema.
+- Viagens que atravessam a meia-noite não são suportadas.
+- Não há limitação de tentativas de login nem proteção CSRF nos formulários.
+- As listas de trens, sensores, rotas e usuários não têm paginação.
+- Não existe uma suíte de testes automatizados versionada no repositório.
+
+## Documentação e verificação
+
+- [Roteiro de testes](docs/roteiro_de_testes.md): cenários manuais e registros de pré-testes anteriores.
+- [Estrutura HTML](docs/estrutura_html.md): classes, componentes e diferenças entre os mockups e o sistema.
+- [Manual do usuário](docs/manual_do_usuario_texto.md): texto-base para o manual, com espaços para capturas.
+- [Guia para a verificação oral](docs/guia_para_a_oral.md): referências para explicar o código.
+
+Durante a implementação visual, foram conferidas prévias de login, painel, lista e formulário de trens nas larguras de 320, 390, 768 e 1440 px. Após a criação do banco local, também foram verificados o login de gestor, o carregamento dos ícones e as páginas de painel, trens e usuários em desktop e celular. Essas conferências não substituem a execução completa do roteiro de testes pela equipe.
+
+## Uso de inteligência artificial
+
+A documentação original declara que o backend PHP/SQL e os documentos iniciais foram gerados com auxílio de **Claude (Anthropic)**, a partir dos guias fornecidos pelo professor. A estrutura HTML também foi atribuída ao Claude no README original.
+
+As alterações desta etapa utilizaram **Codex (OpenAI)**:
+
+| Parte | Trabalho realizado | Verificação realizada |
+|---|---|---|
+| Interface | CSS responsivo baseado nas telas fornecidas e links de navegação no desktop | Prévias em diferentes larguras e inspeção visual |
+| Ícones | Integração local dos Uicons do Flaticon e crédito no rodapé | Carregamento da fonte no navegador e conferência de desktop/celular |
+| Entrada do site | Remoção do redirecionamento automático para o painel ao abrir o login | Verificação de sintaxe PHP e revisão da alteração |
+| Ambiente local | Importação do banco ausente a partir do script existente | Conferência das tabelas e conexão PHP |
+| README | Atualização das instruções e do estado atual do projeto | Revisão dos caminhos, funcionalidades e alterações realizadas |
+
+A equipe deve completar os nomes, a turma e a indicação de quem domina cada parte, além de conferir o formato de declaração exigido pela unidade curricular.

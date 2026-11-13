@@ -3,11 +3,7 @@ session_start();
 require __DIR__ . '/config/conexao.php';
 require __DIR__ . '/includes/funcoes.php';
 
-// Quem ja esta logado vai direto ao painel
-if (isset($_SESSION['usuario_id'])) {
-    header('Location: dashboard.php');
-    exit;
-}
+// A entrada do site sempre apresenta o formulario de login.
 
 $erro = '';
 $login = '';

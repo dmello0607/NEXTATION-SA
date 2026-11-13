@@ -73,6 +73,18 @@ function itemAtual($grupos, $grupo, $pagina)
                 </a>
             </li>
             <?php endif; ?>
+            <?php if ($eh_gestor): ?>
+            <li class="navegacao-item navegacao-desktop">
+                <a class="navegacao-link" href="usuarios.php"<?= in_array($pagina_atual, ['usuarios', 'usuarios_form'], true) ? ' aria-current="page"' : '' ?>>
+                    <?= icone('usuarios') ?><span class="navegacao-texto">Usuários</span>
+                </a>
+            </li>
+            <li class="navegacao-item navegacao-desktop">
+                <a class="navegacao-link" href="sensores.php"<?= in_array($pagina_atual, ['sensores', 'sensores_form'], true) ? ' aria-current="page"' : '' ?>>
+                    <?= icone('sensores') ?><span class="navegacao-texto">Sensores</span>
+                </a>
+            </li>
+            <?php endif; ?>
             <li class="navegacao-item navegacao-mais">
                 <details class="menu-mais">
                     <summary class="navegacao-link"><?= icone('mais') ?><span class="navegacao-texto">Mais</span></summary>
