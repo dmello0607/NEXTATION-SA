@@ -4,7 +4,7 @@ Projeto de monitoramento de uma frota de trens, desenvolvido em PHP e MySQL/Mari
 
 ## Equipe
 
-Preencher os nomes dos integrantes e a turma.
+Felipe Daniel, Henrique Jean, Henrique Miguel e Henrique Nunes | DS M3/M6
 
 ## Funcionalidades
 
